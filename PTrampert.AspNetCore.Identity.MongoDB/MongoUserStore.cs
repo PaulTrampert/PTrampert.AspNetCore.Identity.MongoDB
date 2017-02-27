@@ -8,7 +8,9 @@ using System.Threading.Tasks;
 
 namespace PTrampert.AspNetCore.Identity.MongoDB
 {
-    public class MongoUserStore : IUserStore<MongoIdentityUser>
+    public class MongoUserStore : 
+        IUserStore<MongoIdentityUser>,
+        IUserPasswordStore<MongoIdentityUser>
     {
         private IMongoCollection<MongoIdentityUser> users;
 
@@ -74,6 +76,21 @@ namespace PTrampert.AspNetCore.Identity.MongoDB
         {
             await users.FindOneAndReplaceAsync(u => u.Id == user.Id, user, null, cancellationToken);
             return IdentityResult.Success;
+        }
+
+        public Task SetPasswordHashAsync(MongoIdentityUser user, string passwordHash, CancellationToken cancellationToken)
+        {
+            return Task.Run(() => user.PasswordHash = passwordHash, cancellationToken);
+        }
+
+        public Task<string> GetPasswordHashAsync(MongoIdentityUser user, CancellationToken cancellationToken)
+        {
+            return Task.FromResult(user.PasswordHash);
+        }
+
+        public Task<bool> HasPasswordAsync(MongoIdentityUser user, CancellationToken cancellationToken)
+        {
+            return Task.FromResult(!string.IsNullOrWhiteSpace(user.PasswordHash));
         }
     }
 }

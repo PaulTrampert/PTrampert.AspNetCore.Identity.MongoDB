@@ -22,7 +22,8 @@ namespace PTrampert.AspNetCore.Identity.MongoDB.Test
             {
                 Id = Guid.NewGuid().ToString(),
                 Name = "name",
-                NormalizedName = "normalizedName"
+                NormalizedName = "normalizedName",
+                PasswordHash = "hashypash"
             };
             db = mongoHelper.Database;
             usersCollection = mongoHelper.Users;
@@ -126,6 +127,40 @@ namespace PTrampert.AspNetCore.Identity.MongoDB.Test
             Assert.Equal(IdentityResult.Success, result);
             var storedUser = await userStore.FindByIdAsync(testUser.Id, default(CancellationToken));
             Assert.True(testUser.PropertiesEqual(storedUser));
+        }
+
+        [Fact]
+        public async Task CanGetPasswordHash()
+        {
+            var result = await userStore.GetPasswordHashAsync(testUser, default(CancellationToken));
+            Assert.Equal(testUser.PasswordHash, result);
+        }
+
+        [Fact]
+        public async Task CanSetPasswordHash()
+        {
+            await userStore.SetPasswordHashAsync(testUser, "somehash", default(CancellationToken));
+            Assert.Equal("somehash", testUser.PasswordHash);
+        }
+
+        [Fact]
+        public async Task HasPasswordReturnsTrueWhenPasswordHashIsSet()
+        {
+            Assert.True(await userStore.HasPasswordAsync(testUser, default(CancellationToken)));
+        }
+
+        [Fact]
+        public async Task HasPasswordReturnsFalseWhenPasswordHashIsNull()
+        {
+            testUser.PasswordHash = null;
+            Assert.False(await userStore.HasPasswordAsync(testUser, default(CancellationToken)));
+        }
+
+        [Fact]
+        public async Task HasPasswordReturnsFalseWhenPasswordHashIsEmpty()
+        {
+            testUser.PasswordHash = "";
+            Assert.False(await userStore.HasPasswordAsync(testUser, default(CancellationToken)));
         }
 
         public void Dispose()
