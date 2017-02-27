@@ -23,7 +23,10 @@ namespace PTrampert.AspNetCore.Identity.MongoDB.Test
                 Id = Guid.NewGuid().ToString(),
                 Name = "name",
                 NormalizedName = "normalizedName",
-                PasswordHash = "hashypash"
+                PasswordHash = "hashypash",
+                Email = "test@tester.com",
+                NormalizedEmail = "normal@norm.com",
+                EmailConfirmed = true
             };
             db = mongoHelper.Database;
             usersCollection = mongoHelper.Users;
@@ -161,6 +164,60 @@ namespace PTrampert.AspNetCore.Identity.MongoDB.Test
         {
             testUser.PasswordHash = "";
             Assert.False(await userStore.HasPasswordAsync(testUser, default(CancellationToken)));
+        }
+
+        [Fact]
+        public async Task CanGetEmail()
+        {
+            Assert.Equal(testUser.Email, await userStore.GetEmailAsync(testUser, default(CancellationToken)));
+        }
+
+        [Fact]
+        public async Task CanSetUserEmail()
+        {
+            await userStore.SetEmailAsync(testUser, "some@email.com", default(CancellationToken));
+            Assert.Equal("some@email.com", testUser.Email);
+        }
+
+        [Fact]
+        public async Task CanGetNormalizedEmail()
+        {
+            Assert.Equal(testUser.NormalizedEmail, await userStore.GetNormalizedEmailAsync(testUser, default(CancellationToken)));
+        }
+
+        [Fact]
+        public async Task CanSetNormalizedEmail()
+        {
+            await userStore.SetNormalizedEmailAsync(testUser, "some@NormalizedEmail.com", default(CancellationToken));
+            Assert.Equal("some@NormalizedEmail.com", testUser.NormalizedEmail);
+        }
+
+        [Fact]
+        public async Task CanGetEmailConfirmed()
+        {
+            Assert.True(await userStore.GetEmailConfirmedAsync(testUser, default(CancellationToken)));
+        }
+
+        [Fact]
+        public async Task CanSetEmailConfirmed()
+        {
+            await userStore.SetEmailConfirmedAsync(testUser, false, default(CancellationToken));
+            Assert.False(testUser.EmailConfirmed);
+        }
+
+        [Fact]
+        public async Task CanFindByEmail()
+        {
+            await userStore.CreateAsync(testUser, default(CancellationToken));
+            var result = await userStore.FindByEmailAsync(testUser.NormalizedEmail, default(CancellationToken));
+            Assert.True(testUser.PropertiesEqual(result));
+        }
+
+        [Fact]
+        public async Task FindByEmailReturnsNullWhenUserDoesntExist()
+        {
+            var result = await userStore.FindByEmailAsync(testUser.NormalizedEmail, default(CancellationToken));
+            Assert.Null(result);
         }
 
         public void Dispose()

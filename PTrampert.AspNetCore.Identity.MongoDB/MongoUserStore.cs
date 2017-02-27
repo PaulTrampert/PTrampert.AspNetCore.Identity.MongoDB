@@ -10,7 +10,8 @@ namespace PTrampert.AspNetCore.Identity.MongoDB
 {
     public class MongoUserStore : 
         IUserStore<MongoIdentityUser>,
-        IUserPasswordStore<MongoIdentityUser>
+        IUserPasswordStore<MongoIdentityUser>,
+        IUserEmailStore<MongoIdentityUser>
     {
         private IMongoCollection<MongoIdentityUser> users;
 
@@ -91,6 +92,41 @@ namespace PTrampert.AspNetCore.Identity.MongoDB
         public Task<bool> HasPasswordAsync(MongoIdentityUser user, CancellationToken cancellationToken)
         {
             return Task.FromResult(!string.IsNullOrWhiteSpace(user.PasswordHash));
+        }
+
+        public Task SetEmailAsync(MongoIdentityUser user, string email, CancellationToken cancellationToken)
+        {
+            return Task.Run(() => user.Email = email, cancellationToken);
+        }
+
+        public Task<string> GetEmailAsync(MongoIdentityUser user, CancellationToken cancellationToken)
+        {
+            return Task.FromResult(user.Email);
+        }
+
+        public Task<bool> GetEmailConfirmedAsync(MongoIdentityUser user, CancellationToken cancellationToken)
+        {
+            return Task.FromResult(user.EmailConfirmed);
+        }
+
+        public Task SetEmailConfirmedAsync(MongoIdentityUser user, bool confirmed, CancellationToken cancellationToken)
+        {
+            return Task.Run(() => user.EmailConfirmed = confirmed, cancellationToken);
+        }
+
+        public async Task<MongoIdentityUser> FindByEmailAsync(string normalizedEmail, CancellationToken cancellationToken)
+        {
+            return (await users.FindAsync(u => u.NormalizedEmail == normalizedEmail, null, cancellationToken)).SingleOrDefault();
+        }
+
+        public Task<string> GetNormalizedEmailAsync(MongoIdentityUser user, CancellationToken cancellationToken)
+        {
+            return Task.FromResult(user.NormalizedEmail);
+        }
+
+        public Task SetNormalizedEmailAsync(MongoIdentityUser user, string normalizedEmail, CancellationToken cancellationToken)
+        {
+            return Task.Run(() => user.NormalizedEmail = normalizedEmail, cancellationToken);
         }
     }
 }
