@@ -163,7 +163,7 @@ namespace PTrampert.AspNetCore.Identity.MongoDB
 
         public Task<IList<UserLoginInfo>> GetLoginsAsync(MongoIdentityUser user, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(user.LoginInfo.Select(li => li.ToUserLoginInfo()).ToList() as IList<UserLoginInfo>);
         }
 
         public Task<MongoIdentityUser> FindByLoginAsync(string loginProvider, string providerKey, CancellationToken cancellationToken)

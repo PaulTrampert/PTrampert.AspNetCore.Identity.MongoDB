@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -248,6 +249,13 @@ namespace PTrampert.AspNetCore.Identity.MongoDB.Test
         {
             await userStore.RemoveLoginAsync(testUser, "gwar", "123", default(CancellationToken));
             Assert.DoesNotContain(testUser.LoginInfo, l => l.LoginProvider == "gwar");
+        }
+
+        [Fact]
+        public async Task CanGetLogins()
+        {
+            var result = await userStore.GetLoginsAsync(testUser, default(CancellationToken));
+            Assert.True(result[0].ProviderKey == "123" && result[0].LoginProvider == "gwar");
         }
 
         public void Dispose()
