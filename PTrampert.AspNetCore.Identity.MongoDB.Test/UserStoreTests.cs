@@ -258,6 +258,14 @@ namespace PTrampert.AspNetCore.Identity.MongoDB.Test
             Assert.True(result[0].ProviderKey == "123" && result[0].LoginProvider == "gwar");
         }
 
+        [Fact]
+        public async Task CanFindByLogin()
+        {
+            await userStore.CreateAsync(testUser, default(CancellationToken));
+            var result = await userStore.FindByLoginAsync("gwar", "123", default(CancellationToken));
+            Assert.True(testUser.PropertiesEqual(result));
+        }
+
         public void Dispose()
         {
             db.DropCollection(usersCollection.CollectionNamespace.CollectionName);

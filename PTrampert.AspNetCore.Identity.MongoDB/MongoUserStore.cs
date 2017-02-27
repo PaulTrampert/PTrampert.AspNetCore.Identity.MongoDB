@@ -166,9 +166,9 @@ namespace PTrampert.AspNetCore.Identity.MongoDB
             return Task.FromResult(user.LoginInfo.Select(li => li.ToUserLoginInfo()).ToList() as IList<UserLoginInfo>);
         }
 
-        public Task<MongoIdentityUser> FindByLoginAsync(string loginProvider, string providerKey, CancellationToken cancellationToken)
+        public async Task<MongoIdentityUser> FindByLoginAsync(string loginProvider, string providerKey, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return (await users.FindAsync(u => u.LoginInfo.Any(li => li.LoginProvider == loginProvider && li.ProviderKey == providerKey), null, cancellationToken)).SingleOrDefault();
         }
 
         public Task AddToRoleAsync(MongoIdentityUser user, string roleName, CancellationToken cancellationToken)
