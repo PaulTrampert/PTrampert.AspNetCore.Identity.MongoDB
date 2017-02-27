@@ -81,6 +81,53 @@ namespace PTrampert.AspNetCore.Identity.MongoDB.Test
             Assert.Null(result);
         }
 
+        [Fact]
+        public async Task GetNormalizedUserNameReturnsNormalizedName()
+        {
+            var result = await userStore.GetNormalizedUserNameAsync(testUser, default(CancellationToken));
+            Assert.Equal(testUser.NormalizedName, result);
+        }
+
+        [Fact]
+        public async Task SetNormalizedUserNameSetsTheNormalizedUserName()
+        {
+            await userStore.SetNormalizedUserNameAsync(testUser, "somethingElse", default(CancellationToken));
+            Assert.Equal("somethingElse", testUser.NormalizedName);
+        }
+
+        [Fact]
+        public async Task GetUserIdReturnsId()
+        {
+            var result = await userStore.GetUserIdAsync(testUser, default(CancellationToken));
+            Assert.Equal(testUser.Id, result);
+        }
+
+        [Fact]
+        public async Task GetUserNameReturnsName()
+        {
+            var result = await userStore.GetUserNameAsync(testUser, default(CancellationToken));
+            Assert.Equal(testUser.Name, result);
+        }
+
+        [Fact]
+        public async Task SetUserNameSetsTheNormalizedUserName()
+        {
+            await userStore.SetUserNameAsync(testUser, "somethingElse", default(CancellationToken));
+            Assert.Equal("somethingElse", testUser.Name);
+        }
+
+        [Fact]
+        public async Task CanUpdateAnExistingUser()
+        {
+            await userStore.CreateAsync(testUser, default(CancellationToken));
+            testUser.Name = "something good";
+            testUser.NormalizedName = "something bad";
+            var result = await userStore.UpdateAsync(testUser, default(CancellationToken));
+            Assert.Equal(IdentityResult.Success, result);
+            var storedUser = await userStore.FindByIdAsync(testUser.Id, default(CancellationToken));
+            Assert.True(testUser.PropertiesEqual(storedUser));
+        }
+
         public void Dispose()
         {
             db.DropCollection(usersCollection.CollectionNamespace.CollectionName);

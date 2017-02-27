@@ -47,32 +47,33 @@ namespace PTrampert.AspNetCore.Identity.MongoDB
 
         public Task<string> GetNormalizedUserNameAsync(MongoIdentityUser user, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(user.NormalizedName);
         }
 
         public Task<string> GetUserIdAsync(MongoIdentityUser user, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(user.Id);
         }
 
         public Task<string> GetUserNameAsync(MongoIdentityUser user, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(user.Name);
         }
 
         public Task SetNormalizedUserNameAsync(MongoIdentityUser user, string normalizedName, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.Run(() => user.NormalizedName = normalizedName, cancellationToken);
         }
 
         public Task SetUserNameAsync(MongoIdentityUser user, string userName, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.Run(() => user.Name = userName, cancellationToken);
         }
 
-        public Task<IdentityResult> UpdateAsync(MongoIdentityUser user, CancellationToken cancellationToken)
+        public async Task<IdentityResult> UpdateAsync(MongoIdentityUser user, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            await users.FindOneAndReplaceAsync(u => u.Id == user.Id, user, null, cancellationToken);
+            return IdentityResult.Success;
         }
     }
 }
