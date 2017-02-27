@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 
@@ -13,7 +15,16 @@ namespace PTrampert.AspNetCore.Identity.MongoDB.Test
             var result = true;
             foreach (var prop in properties)
             {
-                result = result && prop.GetValue(self).Equals(prop.GetValue(other));
+                if (prop.Name == nameof(self.LoginInfo))
+                {
+                    var selfLogins = self.LoginInfo.OrderBy(li => li.ProviderKey);
+                    var otherLogins = other.LoginInfo.OrderBy(li => li.ProviderKey);
+                    result = result && selfLogins.SequenceEqual(otherLogins);
+                }
+                else
+                {
+                    result = result && prop.GetValue(self).Equals(prop.GetValue(other));
+                }
             }
             return result;
         }

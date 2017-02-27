@@ -27,7 +27,8 @@ namespace PTrampert.AspNetCore.Identity.MongoDB.Test
                 Email = "test@tester.com",
                 NormalizedEmail = "normal@norm.com",
                 EmailConfirmed = true,
-                SecurityStamp = "stampy"
+                SecurityStamp = "stampy",
+                LoginInfo = new List<MongoUserLoginInfo> { new MongoUserLoginInfo { ProviderKey = "123", LoginProvider = "gwar"} }
             };
             db = mongoHelper.Database;
             usersCollection = mongoHelper.Users;
@@ -233,6 +234,20 @@ namespace PTrampert.AspNetCore.Identity.MongoDB.Test
         {
             await userStore.SetSecurityStampAsync(testUser, "somestamp2", default(CancellationToken));
             Assert.Equal("somestamp2", testUser.SecurityStamp);
+        }
+
+        [Fact]
+        public async Task CanAddLoginInfo()
+        {
+            await userStore.AddLoginAsync(testUser, new UserLoginInfo("google", "gawg", "Google"), default(CancellationToken));
+            Assert.Contains(testUser.LoginInfo, l => l.LoginProvider == "google" && l.ProviderKey == "gawg" && l.ProviderDisplayName == "Google");
+        }
+
+        [Fact]
+        public async Task CanRemoveLoginInfo()
+        {
+            await userStore.RemoveLoginAsync(testUser, "gwar", "123", default(CancellationToken));
+            Assert.DoesNotContain(testUser.LoginInfo, l => l.LoginProvider == "gwar");
         }
 
         public void Dispose()
