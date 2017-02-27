@@ -11,7 +11,8 @@ namespace PTrampert.AspNetCore.Identity.MongoDB
     public class MongoUserStore : 
         IUserStore<MongoIdentityUser>,
         IUserPasswordStore<MongoIdentityUser>,
-        IUserEmailStore<MongoIdentityUser>
+        IUserEmailStore<MongoIdentityUser>,
+        IUserSecurityStampStore<MongoIdentityUser>
     {
         private IMongoCollection<MongoIdentityUser> users;
 
@@ -127,6 +128,16 @@ namespace PTrampert.AspNetCore.Identity.MongoDB
         public Task SetNormalizedEmailAsync(MongoIdentityUser user, string normalizedEmail, CancellationToken cancellationToken)
         {
             return Task.Run(() => user.NormalizedEmail = normalizedEmail, cancellationToken);
+        }
+
+        public Task SetSecurityStampAsync(MongoIdentityUser user, string stamp, CancellationToken cancellationToken)
+        {
+            return Task.Run(() => user.SecurityStamp = stamp, cancellationToken);
+        }
+
+        public Task<string> GetSecurityStampAsync(MongoIdentityUser user, CancellationToken cancellationToken)
+        {
+            return Task.FromResult(user.SecurityStamp);
         }
     }
 }

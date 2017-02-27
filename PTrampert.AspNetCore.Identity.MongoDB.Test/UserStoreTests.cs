@@ -26,7 +26,8 @@ namespace PTrampert.AspNetCore.Identity.MongoDB.Test
                 PasswordHash = "hashypash",
                 Email = "test@tester.com",
                 NormalizedEmail = "normal@norm.com",
-                EmailConfirmed = true
+                EmailConfirmed = true,
+                SecurityStamp = "stampy"
             };
             db = mongoHelper.Database;
             usersCollection = mongoHelper.Users;
@@ -218,6 +219,20 @@ namespace PTrampert.AspNetCore.Identity.MongoDB.Test
         {
             var result = await userStore.FindByEmailAsync(testUser.NormalizedEmail, default(CancellationToken));
             Assert.Null(result);
+        }
+
+        [Fact]
+        public async Task CanGetSecurityStamp()
+        {
+            var result = await userStore.GetSecurityStampAsync(testUser, default(CancellationToken));
+            Assert.Equal(testUser.SecurityStamp, result);
+        }
+
+        [Fact]
+        public async Task CanSetSecurityStamp()
+        {
+            await userStore.SetSecurityStampAsync(testUser, "somestamp2", default(CancellationToken));
+            Assert.Equal("somestamp2", testUser.SecurityStamp);
         }
 
         public void Dispose()
