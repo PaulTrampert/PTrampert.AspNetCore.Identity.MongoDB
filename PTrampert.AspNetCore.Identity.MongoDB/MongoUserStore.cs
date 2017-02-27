@@ -24,24 +24,25 @@ namespace PTrampert.AspNetCore.Identity.MongoDB
             return IdentityResult.Success;
         }
 
-        public Task<IdentityResult> DeleteAsync(MongoIdentityUser user, CancellationToken cancellationToken)
+        public async Task<IdentityResult> DeleteAsync(MongoIdentityUser user, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            await users.DeleteOneAsync(u => u.Id == user.Id, cancellationToken);
+            return IdentityResult.Success;
         }
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            users = null;
         }
 
         public Task<MongoIdentityUser> FindByIdAsync(string userId, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return users.Find(u => u.Id == userId).SingleOrDefaultAsync(cancellationToken);
         }
 
         public Task<MongoIdentityUser> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return users.Find(u => u.NormalizedName == normalizedUserName).SingleOrDefaultAsync(cancellationToken);
         }
 
         public Task<string> GetNormalizedUserNameAsync(MongoIdentityUser user, CancellationToken cancellationToken)
