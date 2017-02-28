@@ -19,21 +19,47 @@ namespace PTrampert.AspNetCore.Identity.MongoDB
         public string NormalizedEmail { get; set; }
         public string SecurityStamp { get; set; }
 
+        private List<PersistedUserLoginInfo> logins;
         [BsonIgnoreIfNull]
-        public List<UserLoginInfo> Logins { get; set; }
+        public IEnumerable<PersistedUserLoginInfo> Logins
+        {
+            get
+            {
+                return logins ?? new List<PersistedUserLoginInfo>();
+            }
+
+            private set
+            {
+                logins = value.ToList();
+            }
+        }
+
+        private List<PersistedClaim> claims;
+        [BsonIgnoreIfNull]
+        public IEnumerable<PersistedClaim> Claims
+        {
+            get
+            {
+                return claims ?? new List<PersistedClaim>();
+            }
+            private set
+            {
+                claims = value.ToList();
+            }
+        }
 
         public IdentityUser()
         {
-            Logins = new List<UserLoginInfo>();
+            Logins = new List<PersistedUserLoginInfo>();
         }
 
-        public void AddLogin(Microsoft.AspNetCore.Identity.UserLoginInfo uli)
+        public void AddLogin(PersistedUserLoginInfo uli)
         {
-            if (Logins == null)
+            if (logins == null)
             {
-                Logins = new List<UserLoginInfo>();
+                logins = new List<PersistedUserLoginInfo>();
             }
-            Logins.Add(new UserLoginInfo(uli));
+            logins.Add(uli);
         }
 
         public void RemoveLogin(string loginProvider, string providerKey)

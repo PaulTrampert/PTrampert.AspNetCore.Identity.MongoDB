@@ -6,37 +6,54 @@ using Microsoft.AspNetCore.Identity;
 
 namespace PTrampert.AspNetCore.Identity.MongoDB
 {
-    public class UserLoginInfo
+    public class PersistedUserLoginInfo : IEquatable<PersistedUserLoginInfo>, IEquatable<UserLoginInfo>
     {
         public string LoginProvider { get; set; }
         public string ProviderKey { get; set; }
         public string ProviderDisplayName { get; set; }
 
-        public UserLoginInfo()
+        public PersistedUserLoginInfo()
         {
         }
 
-        public UserLoginInfo(Microsoft.AspNetCore.Identity.UserLoginInfo uli)
+        public PersistedUserLoginInfo(UserLoginInfo uli)
         {
             LoginProvider = uli.LoginProvider;
             ProviderKey = uli.ProviderKey;
             ProviderDisplayName = uli.ProviderDisplayName;
         }
 
-        public Microsoft.AspNetCore.Identity.UserLoginInfo ToUserLoginInfo()
+        public UserLoginInfo ToUserLoginInfo()
         {
-            return new Microsoft.AspNetCore.Identity.UserLoginInfo(LoginProvider, ProviderKey, ProviderDisplayName);
+            return new UserLoginInfo(LoginProvider, ProviderKey, ProviderDisplayName);
+        }
+
+        public override int GetHashCode()
+        {
+            return LoginProvider.GetHashCode() * 17 + ProviderKey.GetHashCode();
         }
 
         public override bool Equals(object obj)
         {
-            var a = obj as UserLoginInfo;
-            return a != null && Equals(a);
+            if (obj is PersistedUserLoginInfo)
+            {
+                return Equals((PersistedUserLoginInfo)obj);
+            }
+            else if (obj is UserLoginInfo)
+            {
+                return Equals((UserLoginInfo)obj);
+            }
+            return base.Equals(obj);
         }
 
-        private bool Equals(UserLoginInfo other)
+        public bool Equals(PersistedUserLoginInfo other)
         {
-            return LoginProvider == other.LoginProvider && ProviderDisplayName == other.ProviderDisplayName && ProviderKey == other.ProviderKey;
+            return LoginProvider == other.LoginProvider && ProviderKey == other.ProviderKey;
+        }
+
+        public bool Equals(UserLoginInfo other)
+        {
+            return LoginProvider == other.LoginProvider && ProviderKey == other.ProviderKey;
         }
     }
 }

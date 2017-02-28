@@ -150,9 +150,9 @@ namespace PTrampert.AspNetCore.Identity.MongoDB
             return Task.FromResult(user.SecurityStamp);
         }
 
-        public Task AddLoginAsync(IdentityUser user, Microsoft.AspNetCore.Identity.UserLoginInfo login, CancellationToken cancellationToken)
+        public Task AddLoginAsync(IdentityUser user, UserLoginInfo login, CancellationToken cancellationToken)
         {
-            return Task.Run(() => user.AddLogin(login), cancellationToken);
+            return Task.Run(() => user.AddLogin(new PersistedUserLoginInfo(login)), cancellationToken);
         }
 
         public Task RemoveLoginAsync(IdentityUser user, string loginProvider, string providerKey, CancellationToken cancellationToken)
@@ -160,9 +160,9 @@ namespace PTrampert.AspNetCore.Identity.MongoDB
             return Task.Run(() => user.RemoveLogin(loginProvider, providerKey), cancellationToken);
         }
 
-        public Task<IList<Microsoft.AspNetCore.Identity.UserLoginInfo>> GetLoginsAsync(IdentityUser user, CancellationToken cancellationToken)
+        public Task<IList<UserLoginInfo>> GetLoginsAsync(IdentityUser user, CancellationToken cancellationToken)
         {
-            return Task.FromResult(user.Logins.Select(li => li.ToUserLoginInfo()).ToList() as IList<Microsoft.AspNetCore.Identity.UserLoginInfo>);
+            return Task.FromResult(user.Logins.Select(li => li.ToUserLoginInfo()).ToList() as IList<UserLoginInfo>);
         }
 
         public async Task<IdentityUser> FindByLoginAsync(string loginProvider, string providerKey, CancellationToken cancellationToken)

@@ -29,8 +29,8 @@ namespace PTrampert.AspNetCore.Identity.MongoDB.Test
                 NormalizedEmail = "normal@norm.com",
                 EmailConfirmed = true,
                 SecurityStamp = "stampy",
-                Logins = new List<UserLoginInfo> { new UserLoginInfo { ProviderKey = "123", LoginProvider = "gwar"} },
             };
+            testUser.AddLogin(new PersistedUserLoginInfo { ProviderKey = "123", LoginProvider = "gwar" });
             db = mongoHelper.Database;
             usersCollection = mongoHelper.Users;
             userStore = new MongoUserStore(usersCollection);
