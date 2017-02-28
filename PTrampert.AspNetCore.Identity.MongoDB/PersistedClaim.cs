@@ -7,9 +7,20 @@ namespace PTrampert.AspNetCore.Identity.MongoDB
 {
     public class PersistedClaim : IEquatable<PersistedClaim>, IEquatable<Claim>
     {
-        public string Type { get; set; }
+        public string Type { get; private set; }
 
-        public string Value { get; set; }
+        public string Value { get; private set; }
+
+        private PersistedClaim()
+        {
+
+        }
+
+        public PersistedClaim(string type, string value)
+        {
+            Type = type;
+            Value = value;
+        }
 
         public PersistedClaim(Claim claim)
         {

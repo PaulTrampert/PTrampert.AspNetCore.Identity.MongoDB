@@ -172,27 +172,27 @@ namespace PTrampert.AspNetCore.Identity.MongoDB
 
         public Task<IList<Claim>> GetClaimsAsync(IdentityUser user, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(user.Claims.Select(c => new Claim(c.Type, c.Value)).ToList() as IList<Claim>);
         }
 
         public Task AddClaimsAsync(IdentityUser user, IEnumerable<Claim> claims, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.Run(() => user.AddClaims(claims.Select(c => new PersistedClaim(c))), cancellationToken);
         }
 
         public Task ReplaceClaimAsync(IdentityUser user, Claim claim, Claim newClaim, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.Run(() => user.ReplaceClaim(new PersistedClaim(claim), new PersistedClaim(newClaim)), cancellationToken);
         }
 
         public Task RemoveClaimsAsync(IdentityUser user, IEnumerable<Claim> claims, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.Run(() => user.RemoveClaims(claims.Select(c => new PersistedClaim(c))), cancellationToken);
         }
 
-        public Task<IList<IdentityUser>> GetUsersForClaimAsync(Claim claim, CancellationToken cancellationToken)
+        public async Task<IList<IdentityUser>> GetUsersForClaimAsync(Claim claim, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return await (await users.FindAsync(u => u.Claims.Any(c => c.Type == claim.Type && c.Value == claim.Value), cancellationToken: cancellationToken)).ToListAsync(cancellationToken);
         }
 
         public Task<DateTimeOffset?> GetLockoutEndDateAsync(IdentityUser user, CancellationToken cancellationToken)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
@@ -48,18 +49,42 @@ namespace PTrampert.AspNetCore.Identity.MongoDB
             }
         }
 
+        public void AddClaims(IEnumerable<PersistedClaim> newClaims)
+        {
+            Claims = Claims.Union(newClaims);
+        }
+
+        public void AddClaim(PersistedClaim persistedClaim)
+        {
+            AddClaims(new[] { persistedClaim });
+        }
+
+        public void ReplaceClaim(PersistedClaim oldClaim, PersistedClaim newClaim)
+        {
+            if (claims.Remove(oldClaim))
+            {
+                claims.Add(newClaim);
+            }
+        }
+
+        public void RemoveClaims(IEnumerable<PersistedClaim> claims)
+        {
+            Claims = Claims.Except(claims);
+        }
+
         public IdentityUser()
         {
             Logins = new List<PersistedUserLoginInfo>();
         }
 
+        public void AddLogins(IEnumerable<PersistedUserLoginInfo> ulis)
+        {
+            Logins = Logins.Union(ulis);
+        }
+
         public void AddLogin(PersistedUserLoginInfo uli)
         {
-            if (logins == null)
-            {
-                logins = new List<PersistedUserLoginInfo>();
-            }
-            logins.Add(uli);
+            AddLogins(new[] { uli });
         }
 
         public void RemoveLogin(string loginProvider, string providerKey)

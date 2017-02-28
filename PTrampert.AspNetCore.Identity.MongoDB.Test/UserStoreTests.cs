@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using MongoDB.Driver;
 using Xunit;
+using System.Security.Claims;
 
 namespace PTrampert.AspNetCore.Identity.MongoDB.Test
 {
@@ -30,7 +31,8 @@ namespace PTrampert.AspNetCore.Identity.MongoDB.Test
                 EmailConfirmed = true,
                 SecurityStamp = "stampy",
             };
-            testUser.AddLogin(new PersistedUserLoginInfo { ProviderKey = "123", LoginProvider = "gwar" });
+            testUser.AddLogin(new PersistedUserLoginInfo("gwar", "123"));
+            testUser.AddClaim(new PersistedClaim("test", "data"));
             db = mongoHelper.Database;
             usersCollection = mongoHelper.Users;
             userStore = new MongoUserStore(usersCollection);
@@ -240,7 +242,7 @@ namespace PTrampert.AspNetCore.Identity.MongoDB.Test
         [Fact]
         public async Task CanAddLoginInfo()
         {
-            await userStore.AddLoginAsync(testUser, new Microsoft.AspNetCore.Identity.UserLoginInfo("google", "gawg", "Google"), default(CancellationToken));
+            await userStore.AddLoginAsync(testUser, new UserLoginInfo("google", "gawg", "Google"), default(CancellationToken));
             Assert.Contains(testUser.Logins, l => l.LoginProvider == "google" && l.ProviderKey == "gawg" && l.ProviderDisplayName == "Google");
         }
 
@@ -264,6 +266,49 @@ namespace PTrampert.AspNetCore.Identity.MongoDB.Test
             await userStore.CreateAsync(testUser, default(CancellationToken));
             var result = await userStore.FindByLoginAsync("gwar", "123", default(CancellationToken));
             Assert.True(testUser.PropertiesEqual(result));
+        }
+
+        [Fact]
+        public async Task CanAddClaims()
+        {
+            var claims = new[]
+            {
+                new Claim("Fake", "Claim"),
+                new Claim("Bogus", "Data")
+            };
+            await userStore.AddClaimsAsync(testUser, claims, default(CancellationToken));
+            Assert.Contains(testUser.Claims, c => c.Type == "Fake" && c.Value == "Claim");
+            Assert.Contains(testUser.Claims, c => c.Type == "Bogus" && c.Value == "Data");
+        }
+
+        [Fact]
+        public async Task CanRemoveClaims()
+        {
+            await userStore.RemoveClaimsAsync(testUser, testUser.Claims.Select(c => new Claim(c.Type, c.Value)), default(CancellationToken));
+            Assert.Empty(testUser.Claims);
+        }
+
+        [Fact]
+        public async Task CanReplaceClaim()
+        {
+            await userStore.ReplaceClaimAsync(testUser, new Claim("test", "data"), new Claim("bogus", "data"), default(CancellationToken));
+            Assert.Contains(new PersistedClaim("bogus", "data"), testUser.Claims);
+            Assert.DoesNotContain(new PersistedClaim("test", "data"), testUser.Claims);
+        }
+
+        [Fact]
+        public async Task CanGetClaims()
+        {
+            var result = await userStore.GetClaimsAsync(testUser, default(CancellationToken));
+            Assert.Equal(testUser.Claims, result.Select(c => new PersistedClaim(c)));
+        }
+
+        [Fact]
+        public async Task CanGetUsersForClaim()
+        {
+            await userStore.CreateAsync(testUser, default(CancellationToken));
+            var result = await userStore.GetUsersForClaimAsync(new Claim("test", "data"), default(CancellationToken));
+            Assert.True(result.First().PropertiesEqual(testUser));
         }
 
         public void Dispose()

@@ -8,12 +8,19 @@ namespace PTrampert.AspNetCore.Identity.MongoDB
 {
     public class PersistedUserLoginInfo : IEquatable<PersistedUserLoginInfo>, IEquatable<UserLoginInfo>
     {
-        public string LoginProvider { get; set; }
-        public string ProviderKey { get; set; }
+        public string LoginProvider { get; private set; }
+        public string ProviderKey { get; private set; }
         public string ProviderDisplayName { get; set; }
 
-        public PersistedUserLoginInfo()
+        private PersistedUserLoginInfo()
         {
+        }
+
+        public PersistedUserLoginInfo(string loginProvider, string providerKey, string providerDisplayName = null)
+        {
+            LoginProvider = loginProvider;
+            ProviderKey = providerKey;
+            ProviderDisplayName = providerDisplayName;
         }
 
         public PersistedUserLoginInfo(UserLoginInfo uli)
