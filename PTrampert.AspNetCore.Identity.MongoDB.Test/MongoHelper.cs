@@ -11,7 +11,7 @@ namespace PTrampert.AspNetCore.Identity.MongoDB.Test
 
         public IMongoClient Client => new MongoClient("mongodb://localhost/");
         public IMongoDatabase Database => Client.GetDatabase(DbName);
-        public IMongoCollection<MongoIdentityUser> Users => Database.GetCollection<MongoIdentityUser>("users");
+        public IMongoCollection<IdentityUser> Users => Database.GetCollection<IdentityUser>("users");
 
         public void Dispose()
         {

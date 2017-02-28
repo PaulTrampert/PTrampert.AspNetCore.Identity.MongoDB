@@ -9,16 +9,16 @@ namespace PTrampert.AspNetCore.Identity.MongoDB.Test
 {
     public static class MongoUserExtensions
     {
-        public static bool PropertiesEqual(this MongoIdentityUser self, MongoIdentityUser other)
+        public static bool PropertiesEqual(this IdentityUser self, IdentityUser other)
         {
-            var properties = typeof(MongoIdentityUser).GetProperties();
+            var properties = typeof(IdentityUser).GetProperties();
             var result = true;
             foreach (var prop in properties)
             {
-                if (prop.Name == nameof(self.LoginInfo))
+                if (prop.Name == nameof(self.Logins))
                 {
-                    var selfLogins = self.LoginInfo.OrderBy(li => li.ProviderKey);
-                    var otherLogins = other.LoginInfo.OrderBy(li => li.ProviderKey);
+                    var selfLogins = self.Logins.OrderBy(li => li.ProviderKey);
+                    var otherLogins = other.Logins.OrderBy(li => li.ProviderKey);
                     result = result && selfLogins.SequenceEqual(otherLogins);
                 }
                 else

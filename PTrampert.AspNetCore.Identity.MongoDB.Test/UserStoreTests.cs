@@ -13,13 +13,13 @@ namespace PTrampert.AspNetCore.Identity.MongoDB.Test
     public class UserStoreTests : IClassFixture<MongoHelper>, IDisposable
     {
         private IMongoDatabase db;
-        private IMongoCollection<MongoIdentityUser> usersCollection;
+        private IMongoCollection<IdentityUser> usersCollection;
         private MongoUserStore userStore;
-        private MongoIdentityUser testUser;
+        private IdentityUser testUser;
 
         public UserStoreTests(MongoHelper mongoHelper)
         {
-            testUser = new MongoIdentityUser
+            testUser = new IdentityUser
             {
                 Id = Guid.NewGuid().ToString(),
                 Name = "name",
@@ -29,7 +29,7 @@ namespace PTrampert.AspNetCore.Identity.MongoDB.Test
                 NormalizedEmail = "normal@norm.com",
                 EmailConfirmed = true,
                 SecurityStamp = "stampy",
-                LoginInfo = new List<MongoUserLoginInfo> { new MongoUserLoginInfo { ProviderKey = "123", LoginProvider = "gwar"} }
+                Logins = new List<UserLoginInfo> { new UserLoginInfo { ProviderKey = "123", LoginProvider = "gwar"} }
             };
             db = mongoHelper.Database;
             usersCollection = mongoHelper.Users;
@@ -240,15 +240,15 @@ namespace PTrampert.AspNetCore.Identity.MongoDB.Test
         [Fact]
         public async Task CanAddLoginInfo()
         {
-            await userStore.AddLoginAsync(testUser, new UserLoginInfo("google", "gawg", "Google"), default(CancellationToken));
-            Assert.Contains(testUser.LoginInfo, l => l.LoginProvider == "google" && l.ProviderKey == "gawg" && l.ProviderDisplayName == "Google");
+            await userStore.AddLoginAsync(testUser, new Microsoft.AspNetCore.Identity.UserLoginInfo("google", "gawg", "Google"), default(CancellationToken));
+            Assert.Contains(testUser.Logins, l => l.LoginProvider == "google" && l.ProviderKey == "gawg" && l.ProviderDisplayName == "Google");
         }
 
         [Fact]
         public async Task CanRemoveLoginInfo()
         {
             await userStore.RemoveLoginAsync(testUser, "gwar", "123", default(CancellationToken));
-            Assert.DoesNotContain(testUser.LoginInfo, l => l.LoginProvider == "gwar");
+            Assert.DoesNotContain(testUser.Logins, l => l.LoginProvider == "gwar");
         }
 
         [Fact]

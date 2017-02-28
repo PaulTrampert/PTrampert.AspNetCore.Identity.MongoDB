@@ -8,7 +8,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace PTrampert.AspNetCore.Identity.MongoDB
 {
-    public class MongoIdentityUser
+    public class IdentityUser
     {
         public string Id { get; set; }
         public string Name { get; set; }
@@ -18,26 +18,31 @@ namespace PTrampert.AspNetCore.Identity.MongoDB
         public string Email { get; set; }
         public string NormalizedEmail { get; set; }
         public string SecurityStamp { get; set; }
-        [BsonIgnoreIfNull]
-        public List<MongoUserLoginInfo> LoginInfo { get; set; }
 
-        public MongoIdentityUser()
+        [BsonIgnoreIfNull]
+        public List<UserLoginInfo> Logins { get; set; }
+
+        [BsonIgnoreIfNull]
+        public List<string> Roles { get; set; }
+
+        public IdentityUser()
         {
-            LoginInfo = new List<MongoUserLoginInfo>();
+            Logins = new List<UserLoginInfo>();
+            Roles = new List<string>();
         }
 
-        public void AddLogin(UserLoginInfo uli)
+        public void AddLogin(Microsoft.AspNetCore.Identity.UserLoginInfo uli)
         {
-            if (LoginInfo == null)
+            if (Logins == null)
             {
-                LoginInfo = new List<MongoUserLoginInfo>();
+                Logins = new List<UserLoginInfo>();
             }
-            LoginInfo.Add(new MongoUserLoginInfo(uli));
+            Logins.Add(new UserLoginInfo(uli));
         }
 
         public void RemoveLogin(string loginProvider, string providerKey)
         {
-            LoginInfo = LoginInfo?.Except(LoginInfo.Where(li => li.ProviderKey == providerKey && li.LoginProvider == loginProvider)).ToList();
+            Logins = Logins?.Except(Logins.Where(li => li.ProviderKey == providerKey && li.LoginProvider == loginProvider)).ToList();
         }
     }
 }
