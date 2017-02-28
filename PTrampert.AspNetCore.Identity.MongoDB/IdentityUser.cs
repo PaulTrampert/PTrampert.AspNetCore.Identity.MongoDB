@@ -22,13 +22,9 @@ namespace PTrampert.AspNetCore.Identity.MongoDB
         [BsonIgnoreIfNull]
         public List<UserLoginInfo> Logins { get; set; }
 
-        [BsonIgnoreIfNull]
-        public List<string> Roles { get; set; }
-
         public IdentityUser()
         {
             Logins = new List<UserLoginInfo>();
-            Roles = new List<string>();
         }
 
         public void AddLogin(Microsoft.AspNetCore.Identity.UserLoginInfo uli)

@@ -12,7 +12,6 @@ namespace PTrampert.AspNetCore.Identity.MongoDB
 {
     public class MongoUserStore :
         IUserLoginStore<IdentityUser>,
-        IUserRoleStore<IdentityUser>,
         IUserClaimStore<IdentityUser>,
         IUserPasswordStore<IdentityUser>,
         IUserSecurityStampStore<IdentityUser>,
@@ -169,31 +168,6 @@ namespace PTrampert.AspNetCore.Identity.MongoDB
         public async Task<IdentityUser> FindByLoginAsync(string loginProvider, string providerKey, CancellationToken cancellationToken)
         {
             return (await users.FindAsync(u => u.Logins.Any(li => li.LoginProvider == loginProvider && li.ProviderKey == providerKey), null, cancellationToken)).SingleOrDefault();
-        }
-
-        public Task AddToRoleAsync(IdentityUser user, string roleName, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task RemoveFromRoleAsync(IdentityUser user, string roleName, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IList<string>> GetRolesAsync(IdentityUser user, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<bool> IsInRoleAsync(IdentityUser user, string roleName, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IList<IdentityUser>> GetUsersInRoleAsync(string roleName, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
         }
 
         public Task<IList<Claim>> GetClaimsAsync(IdentityUser user, CancellationToken cancellationToken)
