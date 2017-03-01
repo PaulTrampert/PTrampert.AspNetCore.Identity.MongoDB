@@ -440,6 +440,25 @@ namespace PTrampert.AspNetCore.Identity.MongoDB.Test
             Assert.DoesNotContain(new AuthToken("goog.goo", "garbage", "data"), testUser.AuthTokens);
         }
 
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task CanSetTwoFactorEnabled(bool enabled)
+        {
+            await userStore.SetTwoFactorEnabledAsync(testUser, enabled, default(CancellationToken));
+            Assert.Equal(enabled, testUser.TwoFactorEnabled);
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task CanGetTwoFactorEnabled(bool enabled)
+        {
+            testUser.TwoFactorEnabled = enabled;
+            var result = await userStore.GetTwoFactorEnabledAsync(testUser, default(CancellationToken));
+            Assert.Equal(testUser.TwoFactorEnabled, result);
+        }
+
         public void Dispose()
         {
             db.DropCollection(usersCollection.CollectionNamespace.CollectionName);

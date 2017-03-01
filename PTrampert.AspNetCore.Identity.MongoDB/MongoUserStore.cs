@@ -268,12 +268,12 @@ namespace PTrampert.AspNetCore.Identity.MongoDB
 
         public Task SetTwoFactorEnabledAsync(IdentityUser user, bool enabled, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.Run(() => user.TwoFactorEnabled = enabled, cancellationToken);
         }
 
         public Task<bool> GetTwoFactorEnabledAsync(IdentityUser user, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(user.TwoFactorEnabled);
         }
     }
 }

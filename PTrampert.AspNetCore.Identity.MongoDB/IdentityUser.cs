@@ -25,6 +25,7 @@ namespace PTrampert.AspNetCore.Identity.MongoDB
         public DateTimeOffset? LockoutEndDate { get; set; }
         public int AccessFailedCount { get; set; }
         public bool LockoutEnabled { get; set; }
+        public bool TwoFactorEnabled { get; set; }
 
         private List<AuthToken> authTokens;
 
