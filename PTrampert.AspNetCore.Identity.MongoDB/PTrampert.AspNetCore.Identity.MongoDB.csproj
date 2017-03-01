@@ -1,11 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <Authors>Paul Trampert</Authors>
+    <Description>MongoDB based storage provider for AspNetCore.Identity.</Description>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/PaulTrampert/PTrampert.AspNetCore.Identity.MongoDB/master/LICENSE.txt</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/PaulTrampert/PTrampert.AspNetCore.Identity.MongoDB</PackageProjectUrl>
+    <PackageTags>identity membership mongodb mongo ASP.NET Core</PackageTags>
     <TargetFramework>netstandard1.5</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="NETStandard.Library" Version="1.6.1"/>
+    <PackageReference Include="NETStandard.Library" Version="1.6.1" />
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="1.1.0" />
     <PackageReference Include="MongoDB.Driver" Version="2.4.2" />
   </ItemGroup>
