@@ -30,6 +30,7 @@ namespace PTrampert.AspNetCore.Identity.MongoDB.Test
                 NormalizedEmail = "normal@norm.com",
                 EmailConfirmed = true,
                 SecurityStamp = "stampy",
+                LockoutEndDate = new DateTimeOffset(DateTime.Now)
             };
             testUser.AddLogin(new PersistedUserLoginInfo("gwar", "123"));
             testUser.AddClaim(new PersistedClaim("test", "data"));
@@ -309,6 +310,73 @@ namespace PTrampert.AspNetCore.Identity.MongoDB.Test
             await userStore.CreateAsync(testUser, default(CancellationToken));
             var result = await userStore.GetUsersForClaimAsync(new Claim("test", "data"), default(CancellationToken));
             Assert.True(result.First().PropertiesEqual(testUser));
+        }
+
+        [Fact]
+        public async Task CanGetLockoutEndDate()
+        {
+            var result = await userStore.GetLockoutEndDateAsync(testUser, default(CancellationToken));
+            Assert.Equal(testUser.LockoutEndDate, result);
+        }
+
+        [Fact]
+        public async Task CanSetLockoutEndDate()
+        {
+            await userStore.SetLockoutEndDateAsync(testUser, null, default(CancellationToken));
+            Assert.Null(testUser.LockoutEndDate);
+        }
+
+        [Theory]
+        [InlineData(2, 3)]
+        [InlineData(20, 21)]
+        [InlineData(42, 43)]
+        public async Task CanIncrementAccessFailedCount(int start, int expectedResult)
+        {
+            testUser.AccessFailedCount = start;
+            await userStore.IncrementAccessFailedCountAsync(testUser, default(CancellationToken));
+            Assert.Equal(expectedResult, testUser.AccessFailedCount);
+        }
+
+
+        [Theory]
+        [InlineData(2)]
+        [InlineData(20)]
+        [InlineData(42)]
+        public async Task CanResetAccessFailedCount(int accessFailedCount)
+        {
+            testUser.AccessFailedCount = accessFailedCount;
+            await userStore.ResetAccessFailedCountAsync(testUser, default(CancellationToken));
+            Assert.Equal(0, testUser.AccessFailedCount);
+        }
+
+        [Theory]
+        [InlineData(2)]
+        [InlineData(20)]
+        [InlineData(42)]
+        public async Task CanGetAccessFailedCount(int accessFailedCount)
+        {
+            testUser.AccessFailedCount = accessFailedCount;
+            var result = await userStore.GetAccessFailedCountAsync(testUser, default(CancellationToken));
+            Assert.Equal(testUser.AccessFailedCount, result);
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task CanGetLockoutEnabled(bool lockoutEnabled)
+        {
+            testUser.LockoutEnabled = lockoutEnabled;
+            var result = await userStore.GetLockoutEnabledAsync(testUser, default(CancellationToken));
+            Assert.Equal(testUser.LockoutEnabled, result);
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task CanSetLockoutEnabled(bool lockoutEnabled)
+        {
+            await userStore.SetLockoutEnabledAsync(testUser, lockoutEnabled, default(CancellationToken));
+            Assert.Equal(lockoutEnabled, testUser.LockoutEnabled);
         }
 
         public void Dispose()

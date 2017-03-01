@@ -197,37 +197,37 @@ namespace PTrampert.AspNetCore.Identity.MongoDB
 
         public Task<DateTimeOffset?> GetLockoutEndDateAsync(IdentityUser user, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(user.LockoutEndDate);
         }
 
         public Task SetLockoutEndDateAsync(IdentityUser user, DateTimeOffset? lockoutEnd, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.Run(() => user.LockoutEndDate = lockoutEnd, cancellationToken);
         }
 
         public Task<int> IncrementAccessFailedCountAsync(IdentityUser user, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.Run(() => user.AccessFailedCount++, cancellationToken);
         }
 
         public Task ResetAccessFailedCountAsync(IdentityUser user, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.Run(() => user.AccessFailedCount = 0, cancellationToken);
         }
 
         public Task<int> GetAccessFailedCountAsync(IdentityUser user, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(user.AccessFailedCount);
         }
 
         public Task<bool> GetLockoutEnabledAsync(IdentityUser user, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(user.LockoutEnabled);
         }
 
         public Task SetLockoutEnabledAsync(IdentityUser user, bool enabled, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.Run(() => user.LockoutEnabled = enabled, cancellationToken);
         }
 
         public Task SetPhoneNumberAsync(IdentityUser user, string phoneNumber, CancellationToken cancellationToken)

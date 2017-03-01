@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Bson.Serialization.Serializers;
 
 namespace PTrampert.AspNetCore.Identity.MongoDB
 {
@@ -19,6 +20,9 @@ namespace PTrampert.AspNetCore.Identity.MongoDB
         public string Email { get; set; }
         public string NormalizedEmail { get; set; }
         public string SecurityStamp { get; set; }
+        public DateTimeOffset? LockoutEndDate { get; set; }
+        public int AccessFailedCount { get; set; }
+        public bool LockoutEnabled { get; set; }
 
         private List<PersistedUserLoginInfo> logins;
         [BsonIgnoreIfNull]
