@@ -232,22 +232,22 @@ namespace PTrampert.AspNetCore.Identity.MongoDB
 
         public Task SetPhoneNumberAsync(IdentityUser user, string phoneNumber, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.Run(() => user.PhoneNumber = phoneNumber, cancellationToken);
         }
 
         public Task<string> GetPhoneNumberAsync(IdentityUser user, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(user.PhoneNumber);
         }
 
         public Task<bool> GetPhoneNumberConfirmedAsync(IdentityUser user, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(user.PhoneNumberConfirmed);
         }
 
         public Task SetPhoneNumberConfirmedAsync(IdentityUser user, bool confirmed, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.Run(() => user.PhoneNumberConfirmed = confirmed, cancellationToken);
         }
 
         public Task SetTokenAsync(IdentityUser user, string loginProvider, string name, string value,

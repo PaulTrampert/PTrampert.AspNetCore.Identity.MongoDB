@@ -19,6 +19,8 @@ namespace PTrampert.AspNetCore.Identity.MongoDB
         public bool EmailConfirmed { get; set; }
         public string Email { get; set; }
         public string NormalizedEmail { get; set; }
+        public string PhoneNumber { get; set; }
+        public bool PhoneNumberConfirmed { get; set; }
         public string SecurityStamp { get; set; }
         public DateTimeOffset? LockoutEndDate { get; set; }
         public int AccessFailedCount { get; set; }

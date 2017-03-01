@@ -30,7 +30,8 @@ namespace PTrampert.AspNetCore.Identity.MongoDB.Test
                 NormalizedEmail = "normal@norm.com",
                 EmailConfirmed = true,
                 SecurityStamp = "stampy",
-                LockoutEndDate = new DateTimeOffset(DateTime.Now)
+                LockoutEndDate = new DateTimeOffset(DateTime.Now),
+                PhoneNumber = "222222222222"
             };
             testUser.AddLogin(new PersistedUserLoginInfo("gwar", "123"));
             testUser.AddClaim(new PersistedClaim("test", "data"));
@@ -377,6 +378,44 @@ namespace PTrampert.AspNetCore.Identity.MongoDB.Test
         {
             await userStore.SetLockoutEnabledAsync(testUser, lockoutEnabled, default(CancellationToken));
             Assert.Equal(lockoutEnabled, testUser.LockoutEnabled);
+        }
+
+        [Theory]
+        [InlineData("123-456-6677")]
+        [InlineData("5555555555")]
+        public async Task CanSetUserPhoneNumber(string phoneNumber)
+        {
+            await userStore.SetPhoneNumberAsync(testUser, phoneNumber, default(CancellationToken));
+            Assert.Equal(phoneNumber, testUser.PhoneNumber);
+        }
+
+        [Theory]
+        [InlineData("123-456-6677")]
+        [InlineData("5555555555")]
+        public async Task CanGetUserPhoneNumber(string phoneNumber)
+        {
+            testUser.PhoneNumber = phoneNumber;
+            var result = await userStore.GetPhoneNumberAsync(testUser, default(CancellationToken));
+            Assert.Equal(testUser.PhoneNumber, result);
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task CanSetPhoneNumberConfirmed(bool confirmed)
+        {
+            await userStore.SetPhoneNumberConfirmedAsync(testUser, confirmed, default(CancellationToken));
+            Assert.Equal(confirmed, testUser.PhoneNumberConfirmed);
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task CanGetPhoneNumberConfirmed(bool confirmed)
+        {
+            testUser.PhoneNumberConfirmed = confirmed;
+            var result = await userStore.GetPhoneNumberConfirmedAsync(testUser, default(CancellationToken));
+            Assert.Equal(testUser.PhoneNumberConfirmed, result);
         }
 
         public void Dispose()
