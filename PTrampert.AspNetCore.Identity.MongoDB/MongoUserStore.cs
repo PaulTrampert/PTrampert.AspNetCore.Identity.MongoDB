@@ -253,17 +253,17 @@ namespace PTrampert.AspNetCore.Identity.MongoDB
         public Task SetTokenAsync(IdentityUser user, string loginProvider, string name, string value,
             CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.Run(() => user.SetToken(new AuthToken(loginProvider, name, value)), cancellationToken);
         }
 
         public Task RemoveTokenAsync(IdentityUser user, string loginProvider, string name, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.Run(() => user.RemoveToken(loginProvider, name), cancellationToken);
         }
 
-        public Task GetTokenAsync(IdentityUser user, string loginProvider, string name, CancellationToken cancellationToken)
+        public Task<string> GetTokenAsync(IdentityUser user, string loginProvider, string name, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(user.AuthTokens.SingleOrDefault(t => t.LoginProvider == loginProvider && t.Name == name)?.Value);
         }
 
         public Task SetTwoFactorEnabledAsync(IdentityUser user, bool enabled, CancellationToken cancellationToken)
@@ -271,17 +271,7 @@ namespace PTrampert.AspNetCore.Identity.MongoDB
             throw new NotImplementedException();
         }
 
-        public Task GetTwoFactorEnabledAsync(IdentityUser user, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<string> IUserAuthenticationTokenStore<IdentityUser>.GetTokenAsync(IdentityUser user, string loginProvider, string name, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<bool> IUserTwoFactorStore<IdentityUser>.GetTwoFactorEnabledAsync(IdentityUser user, CancellationToken cancellationToken)
+        public Task<bool> GetTwoFactorEnabledAsync(IdentityUser user, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }

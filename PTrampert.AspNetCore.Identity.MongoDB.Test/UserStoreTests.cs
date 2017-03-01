@@ -35,6 +35,7 @@ namespace PTrampert.AspNetCore.Identity.MongoDB.Test
             };
             testUser.AddLogin(new PersistedUserLoginInfo("gwar", "123"));
             testUser.AddClaim(new PersistedClaim("test", "data"));
+            testUser.SetToken(new AuthToken("goog.goo", "garbage", "data"));
             db = mongoHelper.Database;
             usersCollection = mongoHelper.Users;
             userStore = new MongoUserStore(usersCollection);
@@ -416,6 +417,27 @@ namespace PTrampert.AspNetCore.Identity.MongoDB.Test
             testUser.PhoneNumberConfirmed = confirmed;
             var result = await userStore.GetPhoneNumberConfirmedAsync(testUser, default(CancellationToken));
             Assert.Equal(testUser.PhoneNumberConfirmed, result);
+        }
+
+        [Fact]
+        public async Task CanSetToken()
+        {
+            await userStore.SetTokenAsync(testUser, "www.hurdebler.com", "fake", "auth", default(CancellationToken));
+            Assert.Contains(new AuthToken("www.hurdebler.com", "fake", "auth"), testUser.AuthTokens);
+        }
+
+        [Fact]
+        public async Task CanGetToken()
+        {
+            var result = await userStore.GetTokenAsync(testUser, "goog.goo", "garbage", default(CancellationToken));
+            Assert.Equal("data", result);
+        }
+
+        [Fact]
+        public async Task CanRemoveToken()
+        {
+            await userStore.RemoveTokenAsync(testUser, "goog.goo", "garbage", default(CancellationToken));
+            Assert.DoesNotContain(new AuthToken("goog.goo", "garbage", "data"), testUser.AuthTokens);
         }
 
         public void Dispose()

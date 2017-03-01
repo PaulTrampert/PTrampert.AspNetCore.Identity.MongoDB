@@ -27,6 +27,12 @@ namespace PTrampert.AspNetCore.Identity.MongoDB.Test
                     var otherClaims = other.Claims.OrderBy(c => c.Type);
                     result = result && selfClaims.SequenceEqual(otherClaims);
                 }
+                else if (prop.Name == nameof(self.AuthTokens))
+                {
+                    var selfTokens = self.AuthTokens.OrderBy(t => t.LoginProvider);
+                    var otherTokens = other.AuthTokens.OrderBy(t => t.LoginProvider);
+                    result = result && selfTokens.SequenceEqual(otherTokens);
+                }
                 else
                 {
                     result = result && prop.GetValue(self).Equals(prop.GetValue(other));

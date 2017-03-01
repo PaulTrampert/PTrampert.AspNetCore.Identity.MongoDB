@@ -26,6 +26,14 @@ namespace PTrampert.AspNetCore.Identity.MongoDB
         public int AccessFailedCount { get; set; }
         public bool LockoutEnabled { get; set; }
 
+        private List<AuthToken> authTokens;
+
+        public IEnumerable<AuthToken> AuthTokens
+        {
+            get { return authTokens ?? new List<AuthToken>(); }
+            private set { authTokens = value.ToList(); }
+        }
+
         private List<PersistedUserLoginInfo> logins;
         [BsonIgnoreIfNull]
         public IEnumerable<PersistedUserLoginInfo> Logins
@@ -55,6 +63,11 @@ namespace PTrampert.AspNetCore.Identity.MongoDB
             }
         }
 
+        public IdentityUser()
+        {
+            Logins = new List<PersistedUserLoginInfo>();
+        }
+
         public void AddClaims(IEnumerable<PersistedClaim> newClaims)
         {
             Claims = Claims.Union(newClaims);
@@ -78,11 +91,6 @@ namespace PTrampert.AspNetCore.Identity.MongoDB
             Claims = Claims.Except(claims);
         }
 
-        public IdentityUser()
-        {
-            Logins = new List<PersistedUserLoginInfo>();
-        }
-
         public void AddLogins(IEnumerable<PersistedUserLoginInfo> ulis)
         {
             Logins = Logins.Union(ulis);
@@ -96,6 +104,28 @@ namespace PTrampert.AspNetCore.Identity.MongoDB
         public void RemoveLogin(string loginProvider, string providerKey)
         {
             Logins = Logins?.Except(Logins.Where(li => li.ProviderKey == providerKey && li.LoginProvider == loginProvider)).ToList();
+        }
+
+        public void SetToken(AuthToken token)
+        {
+            if (authTokens == null)
+            {
+                authTokens = new List<AuthToken>();
+            }
+            var existingToken = authTokens.SingleOrDefault(t => t.LoginProvider == token.LoginProvider && t.Name == token.Name);
+            if (existingToken == null)
+            {
+                authTokens.Add(token);
+            }
+            else
+            {
+                existingToken.Value = token.Value;
+            }
+        }
+
+        public void RemoveToken(string loginProvider, string name)
+        {
+            AuthTokens = AuthTokens.Except(AuthTokens.Where(t => t.LoginProvider == loginProvider && t.Name == name));
         }
     }
 }
