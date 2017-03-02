@@ -11,6 +11,7 @@ using System.Security.Claims;
 
 namespace PTrampert.AspNetCore.Identity.MongoDB.Test
 {
+    [Collection("db")]
     public class UserStoreTests : IClassFixture<MongoHelper>, IDisposable
     {
         private IMongoDatabase db;
