@@ -64,6 +64,14 @@ namespace PTrampert.AspNetCore.Identity.MongoDB
             }
         }
 
+        private List<string> roles;
+        [BsonIgnoreIfNull]
+        public IEnumerable<string> Roles
+        {
+            get { return roles ?? new List<string>(); }
+            private set { roles = value.ToList(); }
+        }
+
         public IdentityUser()
         {
             Logins = new List<PersistedUserLoginInfo>();
@@ -127,6 +135,26 @@ namespace PTrampert.AspNetCore.Identity.MongoDB
         public void RemoveToken(string loginProvider, string name)
         {
             AuthTokens = AuthTokens.Except(AuthTokens.Where(t => t.LoginProvider == loginProvider && t.Name == name));
+        }
+
+        public void AddToRoles(IEnumerable<string> roles)
+        {
+            Roles = Roles.Union(roles);
+        }
+
+        public void AddToRole(string role)
+        {
+            AddToRoles(new []{role});
+        }
+
+        public void RemoveFromRoles(IEnumerable<string> roles)
+        {
+            Roles = Roles.Except(roles);
+        }
+
+        public void RemoveFromRole(string role)
+        {
+            RemoveFromRoles(new []{role});
         }
     }
 }

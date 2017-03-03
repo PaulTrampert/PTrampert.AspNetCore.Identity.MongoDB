@@ -37,6 +37,7 @@ namespace PTrampert.AspNetCore.Identity.MongoDB.Test
             testUser.AddLogin(new PersistedUserLoginInfo("gwar", "123"));
             testUser.AddClaim(new PersistedClaim("test", "data"));
             testUser.SetToken(new AuthToken("goog.goo", "garbage", "data"));
+            testUser.AddToRole("blarg");
             db = mongoHelper.Database;
             usersCollection = mongoHelper.Users;
             userStore = new MongoUserStore(usersCollection);
@@ -458,6 +459,62 @@ namespace PTrampert.AspNetCore.Identity.MongoDB.Test
             testUser.TwoFactorEnabled = enabled;
             var result = await userStore.GetTwoFactorEnabledAsync(testUser, default(CancellationToken));
             Assert.Equal(testUser.TwoFactorEnabled, result);
+        }
+
+        [Theory]
+        [InlineData("herp")]
+        [InlineData("derp")]
+        [InlineData("marzipan")]
+        public async Task CanAddUserToRole(string roleName)
+        {
+            await userStore.AddToRoleAsync(testUser, roleName, default(CancellationToken));
+            Assert.Contains(roleName, testUser.Roles);
+        }
+
+        [Theory]
+        [InlineData("herp")]
+        [InlineData("derp")]
+        [InlineData("marzipan")]
+        public async Task WontAddUserToRoleTwice(string roleName)
+        {
+            testUser.AddToRole(roleName);
+            await userStore.AddToRoleAsync(testUser, roleName, default(CancellationToken));
+            Assert.Equal(1, testUser.Roles.Count(r => r == roleName));
+        }
+
+        [Theory]
+        [InlineData("herp")]
+        [InlineData("derp")]
+        [InlineData("marzipan")]
+        public async Task CanRemoveUserFromRole(string roleName)
+        {
+            testUser.AddToRole(roleName);
+            await userStore.RemoveFromRoleAsync(testUser, roleName, default(CancellationToken));
+            Assert.DoesNotContain(roleName, testUser.Roles);
+            Assert.Contains("blarg", testUser.Roles);
+        }
+
+        [Fact]
+        public async Task CanGetUserRoles()
+        {
+            var result = await userStore.GetRolesAsync(testUser, default(CancellationToken));
+            Assert.True(testUser.Roles.SequenceEqual(result));
+        }
+
+        [Theory]
+        [InlineData("blarg", true)]
+        [InlineData("nothing", false)]
+        public async Task CanDetermineIfUserInRole(string role, bool expected)
+        {
+            Assert.Equal(expected, await userStore.IsInRoleAsync(testUser, role, default(CancellationToken)));
+        }
+
+        [Fact]
+        public async Task CanFindUsersInRole()
+        {
+            await userStore.CreateAsync(testUser, default(CancellationToken));
+            var result = await userStore.GetUsersInRoleAsync("blarg", default(CancellationToken));
+            Assert.Contains(result, u => testUser.PropertiesEqual(u));
         }
 
         public void Dispose()

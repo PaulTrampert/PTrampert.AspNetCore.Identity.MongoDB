@@ -20,7 +20,8 @@ namespace PTrampert.AspNetCore.Identity.MongoDB
         IUserPhoneNumberStore<IdentityUser>,
         IQueryableUserStore<IdentityUser>,
         IUserAuthenticationTokenStore<IdentityUser>,
-        IUserTwoFactorStore<IdentityUser>
+        IUserTwoFactorStore<IdentityUser>,
+        IUserRoleStore<IdentityUser>
     {
         private IMongoCollection<IdentityUser> users;
 
@@ -274,6 +275,32 @@ namespace PTrampert.AspNetCore.Identity.MongoDB
         public Task<bool> GetTwoFactorEnabledAsync(IdentityUser user, CancellationToken cancellationToken)
         {
             return Task.FromResult(user.TwoFactorEnabled);
+        }
+
+        public Task AddToRoleAsync(IdentityUser user, string roleName, CancellationToken cancellationToken)
+        {
+            return Task.Run(() => user.AddToRole(roleName), cancellationToken);
+        }
+
+        public Task RemoveFromRoleAsync(IdentityUser user, string roleName, CancellationToken cancellationToken)
+        {
+            return Task.Run(() => user.RemoveFromRole(roleName), cancellationToken);
+        }
+
+        public Task<IList<string>> GetRolesAsync(IdentityUser user, CancellationToken cancellationToken)
+        {
+            return Task.FromResult(user.Roles.ToList() as IList<string>);
+        }
+
+        public Task<bool> IsInRoleAsync(IdentityUser user, string roleName, CancellationToken cancellationToken)
+        {
+            return Task.Run(() => user.Roles.Contains(roleName), cancellationToken);
+        }
+
+        public async Task<IList<IdentityUser>> GetUsersInRoleAsync(string roleName, CancellationToken cancellationToken)
+        {
+            var result = await users.FindAsync(u => u.Roles.Contains(roleName), cancellationToken: cancellationToken);
+            return await result.ToListAsync(cancellationToken);
         }
     }
 }
