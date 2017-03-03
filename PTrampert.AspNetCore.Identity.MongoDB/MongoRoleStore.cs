@@ -42,37 +42,37 @@ namespace PTrampert.AspNetCore.Identity.MongoDB
 
         public Task<string> GetRoleIdAsync(IdentityRole role, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(role.Id);
         }
 
         public Task<string> GetRoleNameAsync(IdentityRole role, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(role.Name);
         }
 
         public Task SetRoleNameAsync(IdentityRole role, string roleName, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.Run(() => role.Name = roleName, cancellationToken);
         }
 
         public Task<string> GetNormalizedRoleNameAsync(IdentityRole role, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(role.NormalizedName);
         }
 
         public Task SetNormalizedRoleNameAsync(IdentityRole role, string normalizedName, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return Task.Run(() => role.NormalizedName = normalizedName, cancellationToken);
         }
 
-        public Task<IdentityRole> FindByIdAsync(string roleId, CancellationToken cancellationToken)
+        public async Task<IdentityRole> FindByIdAsync(string roleId, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return (await roles.FindAsync(r => r.Id == roleId, cancellationToken: cancellationToken)).SingleOrDefault();
         }
 
-        public Task<IdentityRole> FindByNameAsync(string normalizedRoleName, CancellationToken cancellationToken)
+        public async Task<IdentityRole> FindByNameAsync(string normalizedRoleName, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return (await roles.FindAsync(r => r.NormalizedName == normalizedRoleName, cancellationToken: cancellationToken)).SingleOrDefault();
         }
     }
 }

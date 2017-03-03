@@ -72,5 +72,76 @@ namespace PTrampert.AspNetCore.Identity.MongoDB.Test
             insertedRole = (await roles.FindAsync(r => r.Id == testRole.Id)).SingleOrDefault();
             Assert.Null(insertedRole);
         }
+
+        [Fact]
+        public async Task CanGetId()
+        {
+            var result = await subject.GetRoleIdAsync(testRole, default(CancellationToken));
+            Assert.Equal(testRole.Id, result);
+        }
+
+        [Fact]
+        public async Task CanGetName()
+        {
+            var result = await subject.GetRoleNameAsync(testRole, default(CancellationToken));
+            Assert.Equal(testRole.Name, result);
+        }
+
+        [Theory]
+        [InlineData("derp")]
+        [InlineData("flerp")]
+        [InlineData("marzipan")]
+        public async Task CanSetName(string name)
+        {
+            await subject.SetRoleNameAsync(testRole, name, default(CancellationToken));
+            Assert.Equal(name, testRole.Name);
+        }
+
+        [Fact]
+        public async Task CanGetNormalizedRoleName()
+        {
+            var result = await subject.GetNormalizedRoleNameAsync(testRole, default(CancellationToken));
+            Assert.Equal(testRole.NormalizedName, result);
+        }
+
+        [Theory]
+        [InlineData("derp")]
+        [InlineData("flerp")]
+        [InlineData("marzipan")]
+        public async Task CanSetNormalizedName(string name)
+        {
+            await subject.SetNormalizedRoleNameAsync(testRole, name, default(CancellationToken));
+            Assert.Equal(name, testRole.NormalizedName);
+        }
+
+        [Fact]
+        public async Task CanFindById()
+        {
+            await subject.CreateAsync(testRole, default(CancellationToken));
+            var result = await subject.FindByIdAsync(testRole.Id, default(CancellationToken));
+            Assert.True(testRole.PropertiesEqual(result));
+        }
+
+        [Fact]
+        public async Task FindByIdReturnsNullWhenNotFound()
+        {
+            var result = await subject.FindByIdAsync(testRole.Id, default(CancellationToken));
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public async Task CanFindByName()
+        {
+            await subject.CreateAsync(testRole, default(CancellationToken));
+            var result = await subject.FindByNameAsync(testRole.NormalizedName, default(CancellationToken));
+            Assert.True(testRole.PropertiesEqual(result));
+        }
+
+        [Fact]
+        public async Task FindByNameReturnsNullWhenNotFound()
+        {
+            var result = await subject.FindByIdAsync(testRole.NormalizedName, default(CancellationToken));
+            Assert.Null(result);
+        }
     }
 }
