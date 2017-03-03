@@ -24,7 +24,9 @@ namespace PTrampert.AspNetCore.Identity.MongoDB.Test
             subject = new MongoRoleStore(roles);
             testRole = new IdentityRole
             {
-                Id = Guid.NewGuid().ToString()
+                Id = Guid.NewGuid().ToString(),
+                Name = "testRole",
+                NormalizedName = "testNorm"
             };
         }
 
@@ -41,6 +43,34 @@ namespace PTrampert.AspNetCore.Identity.MongoDB.Test
             var insertedRole = (await roles.FindAsync(r => r.Id == testRole.Id)).SingleOrDefault();
             Assert.NotNull(insertedRole);
             Assert.True(testRole.PropertiesEqual(insertedRole));
+        }
+
+        [Fact]
+        public async Task CanUpdateRole()
+        {
+            var result = await subject.CreateAsync(testRole, default(CancellationToken));
+            Assert.Equal(IdentityResult.Success, result);
+            testRole.Name = "otherName";
+            var insertedRole = (await roles.FindAsync(r => r.Id == testRole.Id)).SingleOrDefault();
+            Assert.NotNull(insertedRole);
+            Assert.False(testRole.PropertiesEqual(insertedRole));
+            result = await subject.UpdateAsync(testRole, default(CancellationToken));
+            Assert.Equal(IdentityResult.Success, result);
+            insertedRole = (await roles.FindAsync(r => r.Id == testRole.Id)).SingleOrDefault();
+            Assert.NotNull(insertedRole);
+            Assert.True(testRole.PropertiesEqual(insertedRole));
+        }
+
+        [Fact]
+        public async Task CanRemoveRole()
+        {
+            await subject.CreateAsync(testRole, default(CancellationToken));
+            var insertedRole = (await roles.FindAsync(r => r.Id == testRole.Id)).SingleOrDefault();
+            Assert.NotNull(insertedRole);
+            var result = await subject.DeleteAsync(testRole, default(CancellationToken));
+            Assert.Equal(IdentityResult.Success, result);
+            insertedRole = (await roles.FindAsync(r => r.Id == testRole.Id)).SingleOrDefault();
+            Assert.Null(insertedRole);
         }
     }
 }

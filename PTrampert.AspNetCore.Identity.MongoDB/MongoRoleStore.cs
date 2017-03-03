@@ -28,14 +28,16 @@ namespace PTrampert.AspNetCore.Identity.MongoDB
             return IdentityResult.Success;
         }
 
-        public Task<IdentityResult> UpdateAsync(IdentityRole role, CancellationToken cancellationToken)
+        public async Task<IdentityResult> UpdateAsync(IdentityRole role, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            await roles.FindOneAndReplaceAsync(r => r.Id == role.Id, role, cancellationToken: cancellationToken);
+            return IdentityResult.Success;
         }
 
-        public Task<IdentityResult> DeleteAsync(IdentityRole role, CancellationToken cancellationToken)
+        public async Task<IdentityResult> DeleteAsync(IdentityRole role, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            await roles.DeleteOneAsync(r => r.Id == role.Id, cancellationToken);
+            return IdentityResult.Success;
         }
 
         public Task<string> GetRoleIdAsync(IdentityRole role, CancellationToken cancellationToken)
