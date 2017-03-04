@@ -91,7 +91,17 @@ namespace PTrampert.AspNetCore.Identity.MongoDB
         {
             var serviceDescriptor = new ServiceDescriptor(
                 typeof(IRoleStore<IdentityRole>),
-                p => new MongoRoleStore(p.GetService<IMongoDatabase>().GetCollection<IdentityRole>(rolesCollectionName)), 
+                p =>
+                {
+                    var rolesCollection = p.GetService<IMongoDatabase>().GetCollection<IdentityRole>(rolesCollectionName);
+                    rolesCollection.Indexes.CreateOne(
+                        Builders<IdentityRole>.IndexKeys.Ascending(r => r.NormalizedName), new CreateIndexOptions
+                        {
+                            Unique = true,
+                            Sparse = false
+                        });
+                    return new MongoRoleStore(rolesCollection);
+                }, 
                 ServiceLifetime.Scoped);
             services.Add(serviceDescriptor);
         }
