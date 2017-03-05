@@ -38,68 +38,85 @@ namespace PTrampert.AspNetCore.Identity.MongoDB
             services.Add(descriptor);
         }
 
-        public static void AddMongoUserStore(this IServiceCollection services, string usersCollectionName = "users")
+        public static void AddMongoUserStore(this IServiceCollection services, string usersCollectionName = "users", bool manageIndicies = true)
         {
-
             var serviceDescriptor = new ServiceDescriptor(
                 typeof(IUserStore<IdentityUser>), 
                 p =>
                 {
-                    var mongoCollection = p.GetService<IMongoDatabase>().GetCollection<IdentityUser>(usersCollectionName);
-                    mongoCollection.Indexes.CreateOne(
-                        Builders<IdentityUser>.IndexKeys.Ascending(u => u.Name), new CreateIndexOptions<IdentityUser>
-                        {
-                            Unique = true,
-                            Sparse = false
-                        });
-                    mongoCollection.Indexes.CreateOne(
-                        Builders<IdentityUser>.IndexKeys.Ascending(u => u.NormalizedName), new CreateIndexOptions<IdentityUser>
-                        {
-                            Unique = true,
-                            Sparse = false
-                        });
-                    mongoCollection.Indexes.CreateOne(
-                        Builders<IdentityUser>.IndexKeys.Ascending(u => u.NormalizedEmail), new CreateIndexOptions<IdentityUser>
-                        {
-                            Unique = true,
-                            Sparse = false
-                        });
-                    mongoCollection.Indexes.CreateOne(
-                        Builders<IdentityUser>.IndexKeys.Ascending(u => u.Roles), new CreateIndexOptions
-                        {
-                            Sparse = true,
-                        });
-                    mongoCollection.Indexes.CreateOne(
-                        Builders<IdentityUser>.IndexKeys.Combine(
-                            Builders<IdentityUser>.IndexKeys.Ascending(new StringFieldDefinition<IdentityUser>($"{nameof(IdentityUser.Logins)}.{nameof(PersistedUserLoginInfo.LoginProvider)}")),
-                            Builders<IdentityUser>.IndexKeys.Ascending(new StringFieldDefinition<IdentityUser>($"{nameof(IdentityUser.Logins)}.{nameof(PersistedUserLoginInfo.ProviderKey)}"))
-                        )
-                    );
-                    mongoCollection.Indexes.CreateOne(
-                        Builders<IdentityUser>.IndexKeys.Combine(
-                            Builders<IdentityUser>.IndexKeys.Ascending(new StringFieldDefinition<IdentityUser>($"{nameof(IdentityUser.Claims)}.{nameof(PersistedClaim.Type)}")),
-                            Builders<IdentityUser>.IndexKeys.Ascending(new StringFieldDefinition<IdentityUser>($"{nameof(IdentityUser.Claims)}.{nameof(PersistedClaim.Value)}"))
-                        )
-                    );
+                    var mongoCollection =
+                        p.GetService<IMongoDatabase>().GetCollection<IdentityUser>(usersCollectionName);
+                    if (manageIndicies)
+                    {
+                        mongoCollection.Indexes.CreateOne(
+                            Builders<IdentityUser>.IndexKeys.Ascending(u => u.Name),
+                            new CreateIndexOptions<IdentityUser>
+                            {
+                                Unique = true,
+                                Sparse = false
+                            });
+                        mongoCollection.Indexes.CreateOne(
+                            Builders<IdentityUser>.IndexKeys.Ascending(u => u.NormalizedName),
+                            new CreateIndexOptions<IdentityUser>
+                            {
+                                Unique = true,
+                                Sparse = false
+                            });
+                        mongoCollection.Indexes.CreateOne(
+                            Builders<IdentityUser>.IndexKeys.Ascending(u => u.NormalizedEmail),
+                            new CreateIndexOptions<IdentityUser>
+                            {
+                                Unique = true,
+                                Sparse = false
+                            });
+                        mongoCollection.Indexes.CreateOne(
+                            Builders<IdentityUser>.IndexKeys.Ascending(u => u.Roles), new CreateIndexOptions
+                            {
+                                Sparse = true,
+                            });
+                        mongoCollection.Indexes.CreateOne(
+                            Builders<IdentityUser>.IndexKeys.Combine(
+                                Builders<IdentityUser>.IndexKeys.Ascending(
+                                    new StringFieldDefinition<IdentityUser>(
+                                        $"{nameof(IdentityUser.Logins)}.{nameof(PersistedUserLoginInfo.LoginProvider)}")),
+                                Builders<IdentityUser>.IndexKeys.Ascending(
+                                    new StringFieldDefinition<IdentityUser>(
+                                        $"{nameof(IdentityUser.Logins)}.{nameof(PersistedUserLoginInfo.ProviderKey)}"))
+                            )
+                        );
+                        mongoCollection.Indexes.CreateOne(
+                            Builders<IdentityUser>.IndexKeys.Combine(
+                                Builders<IdentityUser>.IndexKeys.Ascending(
+                                    new StringFieldDefinition<IdentityUser>(
+                                        $"{nameof(IdentityUser.Claims)}.{nameof(PersistedClaim.Type)}")),
+                                Builders<IdentityUser>.IndexKeys.Ascending(
+                                    new StringFieldDefinition<IdentityUser>(
+                                        $"{nameof(IdentityUser.Claims)}.{nameof(PersistedClaim.Value)}"))
+                            )
+                        );
+                    }
                     return new MongoUserStore(mongoCollection);
                 }, 
                 ServiceLifetime.Scoped);
             services.Add(serviceDescriptor);
         }
 
-        public static void AddMongoRolesStore(this IServiceCollection services, string rolesCollectionName = "roles")
+        public static void AddMongoRolesStore(this IServiceCollection services, string rolesCollectionName = "roles", bool manageIndicies = true)
         {
             var serviceDescriptor = new ServiceDescriptor(
                 typeof(IRoleStore<IdentityRole>),
                 p =>
                 {
                     var rolesCollection = p.GetService<IMongoDatabase>().GetCollection<IdentityRole>(rolesCollectionName);
-                    rolesCollection.Indexes.CreateOne(
-                        Builders<IdentityRole>.IndexKeys.Ascending(r => r.NormalizedName), new CreateIndexOptions
-                        {
-                            Unique = true,
-                            Sparse = false
-                        });
+                    if (manageIndicies)
+                    {
+                        rolesCollection.Indexes.CreateOne(
+                            Builders<IdentityRole>.IndexKeys.Ascending(r => r.NormalizedName), new CreateIndexOptions
+                            {
+                                Unique = true,
+                                Sparse = false
+                            });
+                    }
                     return new MongoRoleStore(rolesCollection);
                 }, 
                 ServiceLifetime.Scoped);
