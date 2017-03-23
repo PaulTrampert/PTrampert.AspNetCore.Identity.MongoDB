@@ -1,5 +1,5 @@
 # PTrampert.AspNetCore.Identity.MongoDB
-Master Build: ![Build Status](https://jenkins.ptrampert.com/buildStatus/icon?job=GitHub PaulTrampert/PTrampert.AspNetCore.Identity.MongoDB/master)
+Master Build: ![Build Status](https://jenkins.ptrampert.com/buildStatus/icon?job=GitHub%20PaulTrampert/PTrampert.AspNetCore.Identity.MongoDB/master)
 
 MongoDB data store for AspNetCore.Identity.
 
