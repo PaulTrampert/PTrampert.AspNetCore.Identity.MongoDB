@@ -40,11 +40,5 @@ namespace PTrampert.AspNetCore.Identity.MongoDB
             services.AddSingleton<MongoRoleStore>();
             return services;
         }
-
-        public static IServiceCollection AddMongoRoleStore(this IServiceCollection services)
-        {
-            services.AddSingleton<MongoRoleStore>();
-            return services;
-        }
     }
 }
