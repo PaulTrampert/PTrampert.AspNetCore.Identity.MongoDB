@@ -4,13 +4,21 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using MongoDB.Driver;
+using PTrampert.AspNetCore.Identity.MongoDB.Configuration;
 
 namespace PTrampert.AspNetCore.Identity.MongoDB
 {
     public class MongoRoleStore : IRoleStore<IdentityRole>
     {
         private IMongoCollection<IdentityRole> roles;
+
+        public MongoRoleStore(IOptionsSnapshot<MongoRoleStoreOptions> snapshot)
+        {
+            var opts = snapshot.Value;
+            roles = opts.Roles;
+        }
 
         public MongoRoleStore(IMongoCollection<IdentityRole> roles)
         {

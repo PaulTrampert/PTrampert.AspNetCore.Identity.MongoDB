@@ -7,6 +7,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Security.Claims;
 using System.Linq;
+using Microsoft.Extensions.Options;
+using PTrampert.AspNetCore.Identity.MongoDB.Configuration;
 
 namespace PTrampert.AspNetCore.Identity.MongoDB
 {
@@ -28,11 +30,16 @@ namespace PTrampert.AspNetCore.Identity.MongoDB
 
         public IQueryable<T> Users => users.AsQueryable();
 
+        public MongoUserStore(IOptionsSnapshot<MongoUserStoreOptions<T>> snapshot)
+        {
+            var opts = snapshot.Value;
+            users = opts.Users;
+        }
+
         public MongoUserStore(IMongoCollection<T> users)
         {
             this.users = users;
         }
-
 
         public async Task<IdentityResult> CreateAsync(T user, CancellationToken cancellationToken)
         {

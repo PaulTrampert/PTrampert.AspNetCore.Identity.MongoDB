@@ -1,0 +1,11 @@
+﻿{
+  "IdentityOptions": {
+    "DatabaseOptions": {
+      "ConnectionString": "mongodb://localhost/",
+      "Database": "test"
+    },
+    "UsersCollectionName": "testUsers",
+    "RolesCollectionName": "testRoles",
+    "ManageIndicies": true
+  }
+}
