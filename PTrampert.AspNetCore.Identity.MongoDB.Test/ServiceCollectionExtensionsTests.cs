@@ -9,7 +9,7 @@ using Xunit;
 namespace PTrampert.AspNetCore.Identity.MongoDB.Test
 {
     [Collection("db")]
-    public class ServiceCollectionExtensionsTests: IClassFixture<MongoHelper>
+    public class ServiceCollectionExtensionsTests : IClassFixture<MongoHelper>
     {
         private readonly IServiceProvider provider;
 
