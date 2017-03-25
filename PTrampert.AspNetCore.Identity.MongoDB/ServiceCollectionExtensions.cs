@@ -14,14 +14,14 @@ namespace PTrampert.AspNetCore.Identity.MongoDB
         public static IServiceCollection AddMongoUserStore<T>(this IServiceCollection services, Action<MongoUserStoreOptions<T>> configure) where T : IdentityUser
         {
             services.Configure(configure);
-            services.AddSingleton<MongoUserStore<T>>();
+            services.AddSingleton<IUserStore<T>, MongoUserStore<T>>();
             return services;
         }
 
         public static IServiceCollection AddMongoUserStore<T>(this IServiceCollection services, IConfiguration configuration) where T: IdentityUser
         {
             services.Configure<MongoUserStoreOptions<T>>(configuration);
-            services.AddSingleton<MongoUserStore<T>>();
+            services.AddSingleton<IUserStore<T>, MongoUserStore<T>>();
             return services;
         }
 
@@ -29,7 +29,7 @@ namespace PTrampert.AspNetCore.Identity.MongoDB
             Action<MongoRoleStoreOptions> configure)
         {
             services.Configure(configure);
-            services.AddSingleton<MongoRoleStore>();
+            services.AddSingleton<IRoleStore<IdentityRole>, MongoRoleStore>();
             return services;
         }
 
@@ -37,7 +37,7 @@ namespace PTrampert.AspNetCore.Identity.MongoDB
             IConfiguration configuration)
         {
             services.Configure<MongoRoleStoreOptions>(configuration);
-            services.AddSingleton<MongoRoleStore>();
+            services.AddSingleton<IRoleStore<IdentityRole>, MongoRoleStore>();
             return services;
         }
     }
