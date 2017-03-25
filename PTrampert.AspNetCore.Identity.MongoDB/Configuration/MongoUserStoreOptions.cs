@@ -7,7 +7,7 @@ namespace PTrampert.AspNetCore.Identity.MongoDB.Configuration
 {
     public class MongoUserStoreOptions<T> where T : IdentityUser
     {
-        public MongoDatabaseOptions DatabaseOptions { get; set; }
+        public MongoDatabaseOptions DatabaseOptions { get; set; } = new MongoDatabaseOptions();
 
         public string UsersCollectionName { get; set; } = "users";
 

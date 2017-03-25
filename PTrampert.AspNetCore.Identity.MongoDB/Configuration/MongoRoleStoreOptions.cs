@@ -7,7 +7,7 @@ namespace PTrampert.AspNetCore.Identity.MongoDB.Configuration
 {
     public class MongoRoleStoreOptions
     {
-        public MongoDatabaseOptions DatabaseOptions { get; set; }
+        public MongoDatabaseOptions DatabaseOptions { get; set; } = new MongoDatabaseOptions();
 
         public string RolesCollectionName { get; set; } = "roles";
 
