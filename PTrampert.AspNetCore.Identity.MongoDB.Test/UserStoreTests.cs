@@ -16,7 +16,7 @@ namespace PTrampert.AspNetCore.Identity.MongoDB.Test
     {
         private IMongoDatabase db;
         private IMongoCollection<IdentityUser> usersCollection;
-        private MongoUserStore userStore;
+        private MongoUserStore<IdentityUser> userStore;
         private IdentityUser testUser;
 
         public UserStoreTests(MongoHelper mongoHelper)
@@ -40,7 +40,7 @@ namespace PTrampert.AspNetCore.Identity.MongoDB.Test
             testUser.AddToRole("blarg");
             db = mongoHelper.Database;
             usersCollection = mongoHelper.Users;
-            userStore = new MongoUserStore(usersCollection);
+            userStore = new MongoUserStore<IdentityUser>(usersCollection);
         }
 
         [Fact]
