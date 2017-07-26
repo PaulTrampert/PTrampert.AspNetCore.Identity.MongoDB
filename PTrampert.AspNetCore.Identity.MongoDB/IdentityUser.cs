@@ -31,45 +31,33 @@ namespace PTrampert.AspNetCore.Identity.MongoDB
 
         public IEnumerable<AuthToken> AuthTokens
         {
-            get { return authTokens ?? new List<AuthToken>(); }
-            private set { authTokens = value.ToList(); }
+            get => authTokens ?? new List<AuthToken>();
+            private set => authTokens = value.ToList();
         }
 
         private List<PersistedUserLoginInfo> logins;
         [BsonIgnoreIfNull]
         public IEnumerable<PersistedUserLoginInfo> Logins
         {
-            get
-            {
-                return logins ?? new List<PersistedUserLoginInfo>();
-            }
+            get => logins ?? new List<PersistedUserLoginInfo>();
 
-            private set
-            {
-                logins = value.ToList();
-            }
+            private set => logins = value.ToList();
         }
 
         private List<PersistedClaim> claims;
         [BsonIgnoreIfNull]
         public IEnumerable<PersistedClaim> Claims
         {
-            get
-            {
-                return claims ?? new List<PersistedClaim>();
-            }
-            private set
-            {
-                claims = value.ToList();
-            }
+            get => claims ?? new List<PersistedClaim>();
+            private set => claims = value.ToList();
         }
 
         private List<string> roles;
         [BsonIgnoreIfNull]
         public IEnumerable<string> Roles
         {
-            get { return roles ?? new List<string>(); }
-            private set { roles = value.ToList(); }
+            get => roles ?? new List<string>();
+            private set => roles = value.ToList();
         }
 
         public IdentityUser()
