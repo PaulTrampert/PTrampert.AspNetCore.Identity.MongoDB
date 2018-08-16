@@ -49,7 +49,7 @@ namespace PTrampert.AspNetCore.Identity.MongoDB
         public IEnumerable<PersistedClaim> Claims
         {
             get => claims ?? new List<PersistedClaim>();
-            private set => claims = value.ToList();
+            set => claims = value.ToList();
         }
 
         private List<string> roles;
