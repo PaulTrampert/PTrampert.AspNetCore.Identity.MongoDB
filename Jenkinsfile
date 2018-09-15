@@ -51,13 +51,13 @@ pipeline {
 
     stage('Test') {
       steps {
-        sh "dotnet test PTrampert.ApiProxy.Test/PTrampert.ApiProxy.Test.csproj -l trx -c Release --no-build /p:Version=${releaseInfo.nextVersion().toString()}"
+        sh "dotnet test ${repo}.Test/${repo}.Test.csproj -l trx -c Release --no-build /p:Version=${releaseInfo.nextVersion().toString()}"
       }
     }
 
     stage('Package') {
       steps {
-        sh "dotnet pack PTrampert.ApiProxy/PTrampert.ApiProxy.csproj -c Release --no-build /p:Version=${releaseInfo.nextVersion().toString()}"
+        sh "dotnet pack ${repo}/${repo}.csproj -c Release --no-build /p:Version=${releaseInfo.nextVersion().toString()}"
       }
     }
 
