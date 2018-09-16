@@ -9,7 +9,7 @@ def githubApi = 'https://api.github.com'
 pipeline {
   agent {
     docker {
-      image 'dotnet:2.1-sdk'
+      image 'microsoft/dotnet:2.1-sdk'
       args '-v $HOME/.dotnet:/.dotnet -v $HOME/.nuget:/.nuget'
     }
   }
