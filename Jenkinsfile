@@ -7,7 +7,12 @@ def githubCreds = 'Github User/Pass'
 def githubApi = 'https://api.github.com'
 
 pipeline {
-  agent any
+  agent {
+    docker {
+      image 'dotnet:2.1-sdk'
+      args '-v $HOME/.dotnet:/.dotnet -v $HOME/.nuget:/.nuget'
+    }
+  }
 
   options {
     buildDiscarder(logRotator(numToKeepStr:'5'))
@@ -50,8 +55,10 @@ pipeline {
     }
 
     stage('Test') {
+      agent any
+
       steps {
-        sh "dotnet test ${repo}.Test/${repo}.Test.csproj -l trx -c Release --no-build /p:Version=${releaseInfo.nextVersion().toString()}"
+        sh "docker-compose up --exit-code-from ptrampert.aspnetcore.identity.mongodb.test"
       }
     }
 

@@ -1,0 +1,15 @@
+version: '3.4'
+
+services:
+  ptrampert.aspnetcore.identity.mongodb.test:
+    image: microsoft/dotnet:2.1-sdk
+    environment:
+      - MONGO_CONNECTION=mongodb://mongodb/
+    volumes:
+      - .:/project
+    working_dir: /project
+    entrypoint: dotnet test PTrampert.AspNetCore.Identity.MongoDB.Test/PTrampert.AspNetCore.Identity.MongoDB.Test.csproj -l trx -c Release --no-build
+
+
+  mongodb:
+    image: mongo:4
