@@ -7,12 +7,7 @@ def githubCreds = 'Github User/Pass'
 def githubApi = 'https://api.github.com'
 
 pipeline {
-  agent {
-    docker {
-      image 'microsoft/dotnet:2.1-sdk'
-      args '-v $HOME/.dotnet:/.dotnet -v $HOME/.nuget:/.nuget -v /var/run/docker.sock -v /usr/bin/docker:/usr/bin/docker -v /usr/local/bin/docker-compose:/usr/local/bin/docker-compose'
-    }
-  }
+  agent any
 
   options {
     buildDiscarder(logRotator(numToKeepStr:'5'))
@@ -49,7 +44,6 @@ pipeline {
     }
 
     stage('Test') {
-      agent any
       steps {
         sh "docker-compose run -v \$HOME/.dotnet:/.dotnet -v \$HOME/.nuget:/.nuget -u \$(id -u):\$(id -g) --rm ptrampert.aspnetcore.identity.mongodb.test"
       }
