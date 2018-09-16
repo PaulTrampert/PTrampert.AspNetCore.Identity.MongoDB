@@ -14,6 +14,7 @@ namespace PTrampert.AspNetCore.Identity.MongoDB.Configuration
         public bool ManageIndicies { get; set; }
 
         private IMongoCollection<T> users;
+
         internal IMongoCollection<T> Users
         {
             get
@@ -24,53 +25,55 @@ namespace PTrampert.AspNetCore.Identity.MongoDB.Configuration
                     if (ManageIndicies)
                     {
                         users.Indexes.CreateOne(
-                            Builders<T>.IndexKeys.Ascending(u => u.Name),
-                            new CreateIndexOptions<T>
-                            {
-                                Unique = true,
-                                Sparse = false
-                            });
+                            new CreateIndexModel<T>(Builders<T>.IndexKeys.Ascending(u => u.Name),
+                                new CreateIndexOptions<T>
+                                {
+                                    Unique = true,
+                                    Sparse = false
+                                }));
                         users.Indexes.CreateOne(
-                            Builders<T>.IndexKeys.Ascending(u => u.NormalizedName),
-                            new CreateIndexOptions<T>
-                            {
-                                Unique = true,
-                                Sparse = false
-                            });
+                            new CreateIndexModel<T>(Builders<T>.IndexKeys.Ascending(u => u.NormalizedName),
+                                new CreateIndexOptions<T>
+                                {
+                                    Unique = true,
+                                    Sparse = false
+                                }));
                         users.Indexes.CreateOne(
-                            Builders<T>.IndexKeys.Ascending(u => u.NormalizedEmail),
-                            new CreateIndexOptions<T>
-                            {
-                                Unique = true,
-                                Sparse = false
-                            });
+                            new CreateIndexModel<T>(Builders<T>.IndexKeys.Ascending(u => u.NormalizedEmail),
+                                new CreateIndexOptions<T>
+                                {
+                                    Unique = true,
+                                    Sparse = false
+                                }));
                         users.Indexes.CreateOne(
-                            Builders<T>.IndexKeys.Ascending(u => u.Roles), new CreateIndexOptions
-                            {
-                                Sparse = true,
-                            });
+                            new CreateIndexModel<T>(Builders<T>.IndexKeys.Ascending(u => u.Roles),
+                                new CreateIndexOptions
+                                {
+                                    Sparse = true,
+                                }));
                         users.Indexes.CreateOne(
-                            Builders<T>.IndexKeys.Combine(
-                                Builders<T>.IndexKeys.Ascending(
-                                    new StringFieldDefinition<T>(
-                                        $"{nameof(IdentityUser.Logins)}.{nameof(PersistedUserLoginInfo.LoginProvider)}")),
-                                Builders<T>.IndexKeys.Ascending(
-                                    new StringFieldDefinition<T>(
-                                        $"{nameof(IdentityUser.Logins)}.{nameof(PersistedUserLoginInfo.ProviderKey)}"))
-                            )
-                        );
+                            new CreateIndexModel<T>(Builders<T>.IndexKeys.Combine(
+                                    Builders<T>.IndexKeys.Ascending(
+                                        new StringFieldDefinition<T>(
+                                            $"{nameof(IdentityUser.Logins)}.{nameof(PersistedUserLoginInfo.LoginProvider)}")),
+                                    Builders<T>.IndexKeys.Ascending(
+                                        new StringFieldDefinition<T>(
+                                            $"{nameof(IdentityUser.Logins)}.{nameof(PersistedUserLoginInfo.ProviderKey)}"))
+                                )
+                            ));
                         users.Indexes.CreateOne(
-                            Builders<T>.IndexKeys.Combine(
-                                Builders<T>.IndexKeys.Ascending(
-                                    new StringFieldDefinition<T>(
-                                        $"{nameof(IdentityUser.Claims)}.{nameof(PersistedClaim.Type)}")),
-                                Builders<T>.IndexKeys.Ascending(
-                                    new StringFieldDefinition<T>(
-                                        $"{nameof(IdentityUser.Claims)}.{nameof(PersistedClaim.Value)}"))
-                            )
-                        );
+                            new CreateIndexModel<T>(Builders<T>.IndexKeys.Combine(
+                                    Builders<T>.IndexKeys.Ascending(
+                                        new StringFieldDefinition<T>(
+                                            $"{nameof(IdentityUser.Claims)}.{nameof(PersistedClaim.Type)}")),
+                                    Builders<T>.IndexKeys.Ascending(
+                                        new StringFieldDefinition<T>(
+                                            $"{nameof(IdentityUser.Claims)}.{nameof(PersistedClaim.Value)}"))
+                                )
+                            ));
                     }
                 }
+
                 return users;
             }
         }
