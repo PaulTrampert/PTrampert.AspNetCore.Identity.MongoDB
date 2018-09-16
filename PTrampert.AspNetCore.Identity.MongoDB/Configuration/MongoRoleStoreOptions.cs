@@ -23,13 +23,14 @@ namespace PTrampert.AspNetCore.Identity.MongoDB.Configuration
                     roles = DatabaseOptions.Db.GetCollection<IdentityRole>(RolesCollectionName);
                     if (ManageIndicies)
                     {
-                        roles.Indexes.CreateOne(
-                            Builders<IdentityRole>.IndexKeys.Ascending(r => r.NormalizedName), new CreateIndexOptions
-                            {
-                                Unique = true,
-                                Sparse = false,
-                                Background = true
-                            });
+                        var keys = Builders<IdentityRole>.IndexKeys.Ascending(r => r.NormalizedName);
+                        var opts = new CreateIndexOptions
+                        {
+                            Unique = true,
+                            Sparse = false,
+                            Background = true
+                        };
+                        roles.Indexes.CreateOne(new CreateIndexModel<IdentityRole>(keys, opts));
                     }
                 }
                 return roles;
