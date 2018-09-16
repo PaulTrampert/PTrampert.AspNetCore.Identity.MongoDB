@@ -50,7 +50,7 @@ pipeline {
 
     stage('Build') {
       steps {
-        sh "dotnet build -c Release /p:Version=${releaseInfo.nextVersion().toString()}"
+        sh "dotnet build PTrampert.AspNetCore.Identity.MongoDB.sln -c Release /p:Version=${releaseInfo.nextVersion().toString()}"
       }
     }
 
