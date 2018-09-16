@@ -43,21 +43,15 @@ pipeline {
       }
     }
 
-    stage('Build') {
-      steps {
-        sh "dotnet build -c Release /p:Version=${releaseInfo.nextVersion().toString()}"
-      }
-    }
-
     stage('Test') {
       steps {
-        sh "dotnet test ${repo}.Test/${repo}.Test.csproj -l trx -c Release --no-build /p:Version=${releaseInfo.nextVersion().toString()}"
+        sh "docker-compose run -v \$HOME/.dotnet:/.dotnet -v \$HOME/.nuget:/.nuget -u \$(id -u):\$(id -g) --rm ptrampert.aspnetcore.identity.mongodb.test"
       }
     }
 
     stage('Package') {
       steps {
-        sh "dotnet pack ${repo}/${repo}.csproj -c Release --no-build /p:Version=${releaseInfo.nextVersion().toString()}"
+        sh "dotnet pack ${repo}/${repo}.csproj -c Release /p:Version=${releaseInfo.nextVersion().toString()}"
       }
     }
 
