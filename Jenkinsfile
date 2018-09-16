@@ -49,6 +49,7 @@ pipeline {
     }
 
     stage('Test') {
+      agent any
       steps {
         sh "docker-compose run -v \$HOME/.dotnet:/.dotnet -v \$HOME/.nuget:/.nuget -u \$(id -u):\$(id -g) --rm ptrampert.aspnetcore.identity.mongodb.test"
       }
