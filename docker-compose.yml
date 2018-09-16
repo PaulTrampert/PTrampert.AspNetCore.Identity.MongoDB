@@ -8,8 +8,16 @@ services:
     volumes:
       - .:/project
     working_dir: /project
+    networks:
+      - test
+    depends_on:
+      - "mongodb"
     entrypoint: dotnet test PTrampert.AspNetCore.Identity.MongoDB.Test/PTrampert.AspNetCore.Identity.MongoDB.Test.csproj -l trx -c Release
-
 
   mongodb:
     image: mongo:4
+    networks:
+      - test
+
+networks:
+  test:
