@@ -45,13 +45,19 @@ pipeline {
 
     stage('Test') {
       steps {
-        sh "docker-compose run -v \$HOME/.dotnet:/.dotnet -v \$HOME/.nuget:/.nuget -u \$(id -u):\$(id -g) ptrampert.aspnetcore.identity.mongodb.test"
+        sh "docker-compose run -v \$HOME/.dotnet:/.dotnet -v \$HOME/.nuget:/.nuget -u \$(id -u):\$(id -g) --rm ptrampert.aspnetcore.identity.mongodb.test"
       }
     }
 
     stage('Package') {
+      agent {
+        docker {
+          image 'microsoft/dotnet:2.1-sdk'
+          args '-v $HOME/.dotnet:/.dotnet -v $HOME/.nuget:/.nuget'
+        }
+      }
       steps {
-        sh "dotnet pack ${repo}/${repo}.csproj -c Release --no-build /p:Version=${releaseInfo.nextVersion().toString()}"
+        sh "dotnet pack ${repo}/${repo}.csproj -c Release /p:Version=${releaseInfo.nextVersion().toString()}"
       }
     }
 
@@ -73,6 +79,12 @@ pipeline {
     }
 
     stage('Publish Pre-Release') {
+      agent {
+        docker {
+          image 'microsoft/dotnet:2.1-sdk'
+          args '-v $HOME/.dotnet:/.dotnet -v $HOME/.nuget:/.nuget'
+        }
+      }
       when { expression{env.BRANCH_NAME != 'master'} }
       environment {
         API_KEY = credentials('nexus-nuget-apikey')
@@ -83,6 +95,12 @@ pipeline {
     }
 
     stage('Publish Release') {
+      agent {
+        docker {
+          image 'microsoft/dotnet:2.1-sdk'
+          args '-v $HOME/.dotnet:/.dotnet -v $HOME/.nuget:/.nuget'
+        }
+      }
       when { expression {env.BRANCH_NAME == 'master'} }
       environment {
         API_KEY = credentials('nuget-api-key')
