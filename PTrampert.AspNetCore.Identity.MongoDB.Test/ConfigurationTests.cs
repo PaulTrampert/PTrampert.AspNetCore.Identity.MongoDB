@@ -22,7 +22,7 @@ namespace PTrampert.AspNetCore.Identity.MongoDB.Test
                 .AddJsonFile("testconfig.json")
                 .Build();
             serviceCollection.Configure<MongoUserStoreOptions<IdentityUser>>(configuration.GetSection("IdentityOptions"));
-            serviceCollection.Configure<MongoRoleStoreOptions>(configuration.GetSection("IdentityOptions"));
+            serviceCollection.Configure<MongoRoleStoreOptions<IdentityRole>>(configuration.GetSection("IdentityOptions"));
             provider = serviceCollection.BuildServiceProvider();
         }
 
@@ -41,8 +41,8 @@ namespace PTrampert.AspNetCore.Identity.MongoDB.Test
         public void ItLoadsMongoRoleStoreOptionsCorrectly()
         {
 
-            var result = new MongoRoleStoreOptions();
-            provider.GetService<IConfigureOptions<MongoRoleStoreOptions>>().Configure(result);
+            var result = new MongoRoleStoreOptions<IdentityRole>();
+            provider.GetService<IConfigureOptions<MongoRoleStoreOptions<IdentityRole>>>().Configure(result);
             Assert.Equal("mongodb://localhost/", result.DatabaseOptions.ConnectionString);
             Assert.Equal("test", result.DatabaseOptions.Database);
             Assert.Equal("testRoles", result.RolesCollectionName);

@@ -70,11 +70,11 @@ namespace PTrampert.AspNetCore.Identity.MongoDB
         }
 
         /// <summary>
-        /// Adds <see cref="MongoRoleStore"/> as the service for <see cref="IRoleStore{IdentityRole}"/>.
+        /// Adds <see cref="MongoRoleStore{TRole}"/> as the service for <see cref="IRoleStore{TRole}"/>.
         /// </summary>
         /// <example>
         /// <code>
-        /// services.AddMongoRoleStore(opts => 
+        /// services.AddMongoRoleStore&lt;IdentityRole&gt;(opts => 
         /// {
         ///     opts.DatabaseOptions.ConnectionString = "mongodb://localhost/";
         ///     opts.DatabaseOptions.Database = "testdb";
@@ -84,18 +84,20 @@ namespace PTrampert.AspNetCore.Identity.MongoDB
         /// </code>
         /// </example>
         /// <param name="services">The service collection.</param>
-        /// <param name="configure">Action setting the <see cref="MongoUserStoreOptions{T}"/>.</param>
+        /// <param name="configure">Action setting the <see cref="MongoRoleStoreOptions{TRole}"/>.</param>
         /// <returns>The service collection so further calls can be chained.</returns>
-        public static IServiceCollection AddMongoRoleStore(this IServiceCollection services,
-            Action<MongoRoleStoreOptions> configure)
+        public static IServiceCollection AddMongoRoleStore<TRole>(
+            this IServiceCollection services,
+            Action<MongoRoleStoreOptions<TRole>> configure) 
+            where TRole : IdentityRole
         {
             services.Configure(configure);
-            services.AddScoped<IRoleStore<IdentityRole>, MongoRoleStore>();
+            services.AddScoped<IRoleStore<TRole>, MongoRoleStore<TRole>>();
             return services;
         }
 
         /// <summary>
-        /// Adds <see cref="MongoRoleStoreOptions"/> as the service for <see cref="IRoleStore{IdentityRole}"/>.
+        /// Adds <see cref="MongoRoleStoreOptions{TRole}"/> as the service for <see cref="IRoleStore{TRole}"/>.
         /// </summary>
         /// <example>
         /// Using the following configuration file:
@@ -113,17 +115,19 @@ namespace PTrampert.AspNetCore.Identity.MongoDB
         /// </code>
         /// <code>
         /// var config = new ConfigurationBuilder().AddJsonFile("config.json").Build();
-        /// services.AddMongoRoleStore(config.GetSection("IdentityOptions"));
+        /// services.AddMongoRoleStore&lt;IdentityRole&gt;(config.GetSection("IdentityOptions"));
         /// </code>
         /// </example>
         /// <param name="services">The service collection.</param>
-        /// <param name="configuration">The configuration section to setup <see cref="MongoRoleStoreOptions"/> from.</param>
+        /// <param name="configuration">The configuration section to setup <see cref="MongoRoleStoreOptions{TRole}"/> from.</param>
         /// <returns>The service collection so further calls can be chained.</returns>
-        public static IServiceCollection AddMongoRoleStore(this IServiceCollection services,
-            IConfiguration configuration)
+        public static IServiceCollection AddMongoRoleStore<TRole>(
+            this IServiceCollection services,
+            IConfiguration configuration) 
+            where TRole : IdentityRole
         {
-            services.Configure<MongoRoleStoreOptions>(configuration);
-            services.AddScoped<IRoleStore<IdentityRole>, MongoRoleStore>();
+            services.Configure<MongoRoleStoreOptions<TRole>>(configuration);
+            services.AddScoped<IRoleStore<TRole>, MongoRoleStore<TRole>>();
             return services;
         }
     }

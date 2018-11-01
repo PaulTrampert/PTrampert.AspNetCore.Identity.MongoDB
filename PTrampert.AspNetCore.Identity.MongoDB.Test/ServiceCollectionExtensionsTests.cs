@@ -33,7 +33,7 @@ namespace PTrampert.AspNetCore.Identity.MongoDB.Test
         public void CanResolveRoleStore()
         {
             var result = provider.GetRequiredService<IRoleStore<IdentityRole>>();
-            Assert.IsAssignableFrom<MongoRoleStore>(result);
+            Assert.IsAssignableFrom<MongoRoleStore<IdentityRole>>(result);
         }
     }
 }
