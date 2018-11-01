@@ -19,7 +19,7 @@ namespace PTrampert.AspNetCore.Identity.MongoDB.Test
             opts.ManageIndicies = true;
         };
 
-        public Action<MongoRoleStoreOptions> ConfigureRoleStoreOptions = opts =>
+        public Action<MongoRoleStoreOptions<IdentityRole>> ConfigureRoleStoreOptions = opts =>
         {
             opts.DatabaseOptions.Database = DbName;
             opts.DatabaseOptions.ConnectionString = ConnectionString;

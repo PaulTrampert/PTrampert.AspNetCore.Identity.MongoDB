@@ -25,6 +25,6 @@ IServiceCollection extensions:
 ```csharp
 AddMongoUserStore<T>(IConfiguration config)
 AddMongoUserStore<T>(Action<MongoUserStoreOptions<T>> config)
-AddMongoRoleStore(IConfiguration config)
-AddMongoRoleStore(Action<MongoRoleStoreOptions config)
+AddMongoRoleStore<TRole>(IConfiguration config)
+AddMongoRoleStore<TRole>(Action<MongoRoleStoreOptions<TRole> config)
 ```
