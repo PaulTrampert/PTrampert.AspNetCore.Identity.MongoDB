@@ -14,14 +14,14 @@ namespace PTrampert.AspNetCore.Identity.MongoDB.Test
     {
         private IMongoDatabase db;
         private IMongoCollection<IdentityRole> roles;
-        private MongoRoleStore subject;
+        private MongoRoleStore<IdentityRole> subject;
         private IdentityRole testRole;
 
         public MongoRoleStoreTests(MongoHelper helper)
         {
             db = helper.Database;
             roles = helper.Roles;
-            subject = new MongoRoleStore(roles);
+            subject = new MongoRoleStore<IdentityRole>(roles);
             testRole = new IdentityRole
             {
                 Id = Guid.NewGuid().ToString(),
