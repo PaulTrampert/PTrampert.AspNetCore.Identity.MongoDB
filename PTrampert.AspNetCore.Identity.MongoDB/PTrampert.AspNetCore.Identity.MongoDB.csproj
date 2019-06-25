@@ -3,10 +3,12 @@
   <PropertyGroup>
     <Authors>Paul Trampert</Authors>
     <Description>MongoDB based storage provider for AspNetCore.Identity.</Description>
-    <PackageLicenseUrl>https://raw.githubusercontent.com/PaulTrampert/PTrampert.AspNetCore.Identity.MongoDB/master/LICENSE.txt</PackageLicenseUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/PaulTrampert/PTrampert.AspNetCore.Identity.MongoDB</PackageProjectUrl>
     <PackageTags>identity membership mongodb mongo ASP.NET Core</PackageTags>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
   <ItemGroup>
