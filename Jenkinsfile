@@ -1,39 +1,31 @@
+@Library('github-release-helpers@v0.2.1')
 def releaseInfo
-def branch
-def owner = 'PaulTrampert'
-def repo = 'PTrampert.AspNetCore.Identity.MongoDB'
-def versionPrefix = 'v'
-def githubCreds = 'Github User/Pass'
-def githubApi = 'https://api.github.com'
 
 pipeline {
   agent any
 
   options {
     buildDiscarder(logRotator(numToKeepStr:'5'))
+    timestamps()
   }
 
+  environment {
+		PROJECT_NAME = "PTrampert.AspNetCore.Identity.MongoDB"
+    DOTNET_IMAGE = "mcr.microsoft.com/dotnet/core/sdk:2.2"
+    MONGO_IMAGE = "mongo:4"
+	}
+
   stages {
-    stage('Set branch') {
-      when { expression { env.BRANCH_NAME != 'master' } }
-
-      steps {
-        script {
-          branch = env.BRANCH_NAME
-        }
-      }
-    }
-
-    stage('Build Release Info') {
+		stage('Build Release Info') {
       steps {
         script {
           releaseInfo = generateGithubReleaseInfo(
-            owner,
-            repo,
-            versionPrefix,
-            githubCreds,
-            githubApi,
-            branch,
+            'PaulTrampert',
+            "$PROJECT_NAME",
+            'v',
+            'Github User/Pass',
+            'https://api.github.com',
+            BRANCH_NAME == "master" ? null : BRANCH_NAME,
             env.BUILD_NUMBER
           )
 
@@ -43,36 +35,79 @@ pipeline {
       }
     }
 
-    stage('Test') {
-      steps {
-        sh "docker-compose run -v \$HOME/.dotnet:/.dotnet -v \$HOME/.nuget:/.nuget -u \$(id -u):\$(id -g) --rm ptrampert.aspnetcore.identity.mongodb.test"
+		stage('Test') {
+      environment {
+        MONGO_NAME = "mongo_${BRANCH_NAME}_${BUILD_ID}"
       }
-    }
 
-    stage('Package') {
-      steps {
-        sh "dotnet pack ${repo}/${repo}.csproj -c Release /p:Version=${releaseInfo.nextVersion().toString()}"
-      }
-    }
-
-    stage ('Tag') {
-      when { expression { env.BRANCH_NAME == 'master' } }
-
-      steps {
+			steps {
         script {
-          publishGithubRelease(
-            owner,
-            repo,
-            releaseInfo,
-            versionPrefix,
-            githubCreds,
-            githubApi
+          docker.image(MONGO_IMAGE).withRun("--name ${MONGO_NAME}") {
+            docker.image(DOTNET_IMAGE).inside("-e MONGO_CONNECTION=mongodb://${MONGO_NAME} -e HOME=${HOME}") {
+              sh "dotnet test ${PROJECT_NAME}.Test/${PROJECT_NAME}.Test.csproj -l trx"
+            }
+          }
+        }
+			}
+
+			post {
+				always {
+					xunit(
+            testTimeMargin: '3000',
+            thresholdMode: 1,
+            thresholds: [
+              failed(unstableThreshold: '0')
+            ],
+            tools: [
+              MSTest(
+                deleteOutputFiles: true,
+                failIfNotNew: true,
+                pattern: '**/*.trx',
+                skipNoTestFiles: false,
+                stopProcessingIfError: true
+              )
+            ]
           )
+
+          cobertura(
+            autoUpdateHealth: false,
+            autoUpdateStability: false,
+            coberturaReportFile: '**/*.cobertura.xml',
+            conditionalCoverageTargets: '70, 0, 0',
+            failUnhealthy: false,
+            failUnstable: false,
+            lineCoverageTargets: '80, 0, 0',
+            maxNumberOfBuilds: 0,
+            methodCoverageTargets: '80, 0, 0',
+            onlyStable: false,
+            sourceEncoding: 'ASCII',
+            zoomCoverageChart: false
+          )
+				}
+			}
+		}
+
+		stage('Package') {
+      agent {
+        docker {
+          image DOTNET_IMAGE
+          args "-e HOME=${HOME}"
+          reuseNode true
         }
       }
-    }
+			steps {
+				sh "dotnet pack ${PROJECT_NAME}/${PROJECT_NAME}.csproj -c Release /p:Version=${releaseInfo.nextVersion().toString()}"
+			}
+		}
 
-    stage('Publish Pre-Release') {
+		stage('Publish Pre-Release') {
+      agent {
+        docker {
+          image DOTNET_IMAGE
+          args "-e HOME=${HOME}"
+          reuseNode true
+        }
+      }
       when { expression{env.BRANCH_NAME != 'master'} }
       environment {
         API_KEY = credentials('nexus-nuget-apikey')
@@ -82,19 +117,37 @@ pipeline {
       }
     }
 
-    stage('Publish Release') {
+		stage('Publish Release') {
+      agent {
+        docker {
+          image DOTNET_IMAGE
+          args "-e HOME=${HOME}"
+          reuseNode true
+        }
+      }
       when { expression {env.BRANCH_NAME == 'master'} }
       environment {
         API_KEY = credentials('nuget-api-key')
       }
       steps {
+				script {
+          publishGithubRelease(
+            'PaulTrampert',
+            PROJECT_NAME,
+            releaseInfo,
+            'v',
+            'Github User/Pass',
+            'https://api.github.com'
+          )
+        }
+
         sh "dotnet nuget push **/*.nupkg -s https://api.nuget.org/v3/index.json -k ${env.API_KEY}"
       }
     }
-  }
+	}
 
   post {
-    failure {
+    changed {
       mail(
         to: 'paul.trampert@ptrampert.com',
         subject: "Build status of ${env.JOB_NAME} changed to ${currentBuild.result}", body: "Build log may be found at ${env.BUILD_URL}"
@@ -102,38 +155,6 @@ pipeline {
     }
     always {
       archiveArtifacts '**/*.nupkg'
-
-      xunit(
-        testTimeMargin: '3000',
-        thresholdMode: 1,
-        thresholds: [
-          failed(unstableThreshold: '0')
-        ],
-        tools: [
-          MSTest(
-            deleteOutputFiles: true,
-            failIfNotNew: true,
-            pattern: '**/*.trx',
-            skipNoTestFiles: false,
-            stopProcessingIfError: true
-          )
-        ]
-      )
-
-      cobertura(
-        autoUpdateHealth: false,
-        autoUpdateStability: false,
-        coberturaReportFile: '**/*.cobertura.xml',
-        conditionalCoverageTargets: '70, 0, 0',
-        failUnhealthy: false,
-        failUnstable: false,
-        lineCoverageTargets: '80, 0, 0',
-        maxNumberOfBuilds: 0,
-        methodCoverageTargets: '80, 0, 0',
-        onlyStable: false,
-        sourceEncoding: 'ASCII',
-        zoomCoverageChart: false
-      )
     }
   }
 }
