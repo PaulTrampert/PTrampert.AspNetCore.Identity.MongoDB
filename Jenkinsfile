@@ -41,9 +41,10 @@ pipeline {
       }
 
 			steps {
+        sh "docker network create ${MONGO_NAME}"
         script {
-          docker.image(MONGO_IMAGE).withRun("--name ${MONGO_NAME}") {
-            docker.image(DOTNET_IMAGE).inside("-e MONGO_CONNECTION=mongodb://${MONGO_NAME} -e HOME=${HOME}") {
+          docker.image(MONGO_IMAGE).withRun("--name ${MONGO_NAME} --network ${MONGO_NAME}") {
+            docker.image(DOTNET_IMAGE).inside("-e MONGO_CONNECTION=mongodb://${MONGO_NAME} -e HOME=${HOME} --network ${MONGO_NAME}") {
               sh "dotnet test ${PROJECT_NAME}.Test/${PROJECT_NAME}.Test.csproj -l trx"
             }
           }
@@ -52,6 +53,7 @@ pipeline {
 
 			post {
 				always {
+          sh "docker network rm ${MONGO_NAME}"
 					xunit(
             testTimeMargin: '3000',
             thresholdMode: 1,
