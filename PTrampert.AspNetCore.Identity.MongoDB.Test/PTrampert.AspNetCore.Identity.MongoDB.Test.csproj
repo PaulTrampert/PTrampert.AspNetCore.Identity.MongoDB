@@ -3,7 +3,7 @@
   <PropertyGroup>    
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <CollectCoverage>true</CollectCoverage>
-    <Exclude>[NUnit*]*</Exclude>
+    <Exclude>[xunit*]*</Exclude>
     <CoverletOutputFormat>cobertura</CoverletOutputFormat>
   </PropertyGroup>
 
